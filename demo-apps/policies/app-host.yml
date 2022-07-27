@@ -1,0 +1,12 @@
+- !host
+  id: $APP_NAME
+  annotations:
+    authn-k8s/namespace: $APP_NAMESPACE
+    authn-k8s/service-account: $APP_SERVICE_ACCOUNT_NAME
+    authn-k8s/authentication-container-name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+
+- !grant
+  roles:
+    - !group conjur/authn-k8s/$CONJUR_AUTHENTICATOR_ID/consumers
+  members:
+    - !host $APP_NAME

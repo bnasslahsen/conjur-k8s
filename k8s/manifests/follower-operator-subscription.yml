@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: conjur-follower-operator
+  namespace: $CONJUR_NAMESPACE
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: conjur-follower-operator
+  source: certified-operators
+  sourceNamespace: openshift-marketplace

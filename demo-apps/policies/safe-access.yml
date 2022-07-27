@@ -1,0 +1,3 @@
+- !grant
+  role: !group Vault/LOB_user/Safe/delegation/consumers
+  member: !host $APP_NAME

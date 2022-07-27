@@ -1,0 +1,35 @@
+---
+apiVersion: conjur.cyberark.com/v1
+kind: ConjurFollower
+metadata:
+  name: $FOLLOWER_SERVICE_NAME
+  namespace: $CONJUR_NAMESPACE
+  labels:
+    app: $FOLLOWER_SERVICE_NAME
+spec:
+  replicas: 1
+  master:
+    hostname: $CONJUR_MASTER_HOSTNAME
+    account: $CONJUR_ACCOUNT
+    authenticatorID: $CONJUR_AUTHENTICATOR_ID
+    authnLogin: $FOLLOWER_HOST_ID
+    caCertificateFrom:
+      configMapKeyRef:
+        name: conjur-cert
+        key: conjur.pem
+  # optional
+  configFileFrom:
+    configMapKeyRef:
+      name: conjur-config
+      key: conjur.yml
+  resourceNames:
+    serviceAccount: $FOLLOWER_SERVICE_ACCOUNT_NAME
+    service: $FOLLOWER_SERVICE_NAME
+    deployment: $FOLLOWER_SERVICE_NAME
+  images:
+    configurator: $FOLLOWER_CONFIGURATOR_IMAGE
+    conjur: $FOLLOWER_CONJUR_IMAGE
+    info: $FOLLOWER_INFO_IMAGE
+    nginx: $FOLLOWER_NGINX_IMAGE
+    postgres: $FOLLOWER_POSTGRES_IMAGE
+    syslogNg: $FOLLOWER_SYSLOG_IMAGE
