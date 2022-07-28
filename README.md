@@ -30,7 +30,6 @@ This application requires access to an H2 database.
 - kubectl / oc
 - conjur-cli
 - envsubst / openssl
-- Java 11
 - Clone this git repository
 
 ## Kubernetes / OCP Setup
@@ -73,7 +72,6 @@ Note: All the docker images are already available in dockerhub repository:
 - [`docker.io/bnasslahsen/conjur-summon-k8s-demo`](https://hub.docker.com/r/bnasslahsen/conjur-summon-k8s-demo/tags)
 - [`docker.io/bnasslahsen/conjur-secretless-k8s-demo`](https://hub.docker.com/r/bnasslahsen/conjur-secretless-k8s-demo/tags)
 - [`docker.io/bnasslahsen/conjur-springboot-k8s-demo`](https://hub.docker.com/r/bnasslahsen/conjur-springboot-k8s-demo/tags)
-
 
 ```shell
 cd setup/demo-apps
