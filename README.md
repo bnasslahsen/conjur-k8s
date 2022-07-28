@@ -27,11 +27,9 @@ This application requires access to an H2 database.
 
 ## Pre-requisites
 - OS Linux / MacOS
-- podman
 - kubectl / oc
 - conjur-cli
-- helm
-- envsubst / openssl / jq
+- envsubst / openssl
 - Java 11
 - Clone this git repository
 
