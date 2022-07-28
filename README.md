@@ -3,7 +3,6 @@
 A demo application creating using the Spring Framework. 
 This application requires access to an H2 database.
 
-- [Table of Contents](#table-of-contents)
   * [Pre-requisites](#pre-requisites)
   * [Kubernetes / OCP Setup](#kubernetes---ocp-setup)
     + [Set up a Kubernetes Authenticator endpoint in Conjur / Enable the seed generation  / Initialize the CA (Conjur admin)](#set-up-a-kubernetes-authenticator-endpoint-in-conjur---enable-the-seed-generation----initialize-the-ca--conjur-admin-)
