@@ -15,10 +15,12 @@ spec:
       labels:
         app: $APP_DB_NAME
     spec:
+      securityContext:
+        fsGroup: 999
       serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
       containers:
         - name: $APP_DB_NAME
-          image: postgres:9.6
+          image: postgres:13.8
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
@@ -29,11 +31,21 @@ spec:
               value: $APP_POSTGRESQL_PASSWORD
             - name: POSTGRES_USER
               value: $APP_POSTGRESQL_USER
+          volumeMounts:
+            - name: backend-certs
+              mountPath: "/etc/certs/"
+              readOnly: true
+          args: [ "-c", "ssl=on", "-c", "ssl_cert_file=/etc/certs/pg_server_crt", "-c", "ssl_key_file=/etc/certs/pg_server_key" ]
           readinessProbe:
             exec:
               command: [ "psql", "-w", "-U", $APP_POSTGRESQL_USER, "-c", "SELECT 1" ]
             initialDelaySeconds: 20
             timeoutSeconds: 2
+      volumes:
+        - name: backend-certs
+          secret:
+            secretName: quick-start-backend-certs
+            defaultMode: 384
 ---
 kind: Service
 apiVersion: v1

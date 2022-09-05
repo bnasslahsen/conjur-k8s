@@ -12,6 +12,8 @@ kubectl config set-context --current --namespace="$APP_NAMESPACE"
 kubectl delete configmap secretless-config --ignore-not-found=true
 envsubst < secretless.template.yml > secretless.yml
 kubectl create configmap secretless-config --from-file=secretless.yml
+kubectl delete secret quick-start-backend-certs --ignore-not-found=true
+kubectl create secret generic quick-start-backend-certs --from-file=pg_server_crt --from-file=pg_server_key
 rm secretless.yml
 
 

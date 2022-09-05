@@ -22,7 +22,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: DB_URL
-              value: jdbc:postgresql://localhost:5432/$APP_POSTGRESQL_DB?sslmode=disable
+              value: jdbc:postgresql://localhost:5432/$APP_POSTGRESQL_DB
             - name: DB_USERNAME
               value: dummy
             - name: DB_PASSWORD
