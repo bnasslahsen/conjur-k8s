@@ -80,9 +80,10 @@ metadata:
   name: $APP_SUMMON_INIT
   namespace: $APP_NAMESPACE
 spec:
+  type: NodePort
   ports:
     - port: 8080
-      targetPort: 8084
+      nodePort: 32084
   selector:
     app: $APP_SUMMON_INIT
 ---

@@ -71,8 +71,9 @@ metadata:
   name: $APP_NAME_SECRETLESS
   namespace: $APP_NAMESPACE
 spec:
+  type: NodePort
   ports:
     - port: 8080
-      targetPort: 8081
+      nodePort: 32081
   selector:
     app: $APP_NAME_SECRETLESS

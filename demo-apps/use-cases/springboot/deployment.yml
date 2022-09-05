@@ -66,9 +66,10 @@ metadata:
   name: $APP_SPRINGBOOT
   namespace: $APP_NAMESPACE
 spec:
+  type: NodePort
   ports:
     - port: 8080
-      targetPort: 8086
+      nodePort: 32086
   selector:
     app: $APP_SPRINGBOOT
 ---

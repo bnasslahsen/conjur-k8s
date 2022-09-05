@@ -47,9 +47,10 @@ metadata:
   name: $APP_NAME
   namespace: $APP_NAMESPACE
 spec:
+  type: NodePort
   ports:
     - port: 8080
-      targetPort: 8080
+      nodePort: 32080
   selector:
     app: $APP_NAME
 ---

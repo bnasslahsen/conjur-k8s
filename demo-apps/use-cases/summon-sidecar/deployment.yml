@@ -72,8 +72,10 @@ metadata:
   name: $APP_SUMMON_SIDECAR
   namespace: $APP_NAMESPACE
 spec:
+  type: NodePort
   ports:
     - port: 8080
-      targetPort: 8085
+      nodePort: 32085
   selector:
+    app: $APP_SUMMON_SIDECAR
 ---
