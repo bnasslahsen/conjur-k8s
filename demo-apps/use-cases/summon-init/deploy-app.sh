@@ -4,19 +4,19 @@ set -a
 source "./../../../.env"
 set +a
 
-kubectl config set-context --current --namespace="$APP_NAMESPACE"
+$KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
 
 # SUMMON CONFIGMAP
-kubectl delete configmap summon-config-init --ignore-not-found=true
+$KUBE_CLI delete configmap summon-config-init --ignore-not-found=true
 envsubst < secrets.template.yml > secrets.yml
-kubectl create configmap summon-config-init --from-file=secrets.yml
+$KUBE_CLI create configmap summon-config-init --from-file=secrets.yml
 rm secrets.yml
 
 # DEPLOYMENT
-envsubst < deployment.yml | kubectl replace --force -f -
-if ! kubectl wait deployment "$APP_SUMMON_INIT" --for condition=Available=True --timeout=90s
+envsubst < deployment.yml | $KUBE_CLI replace --force -f -
+if ! $KUBE_CLI wait deployment "$APP_SUMMON_INIT" --for condition=Available=True --timeout=90s
   then exit 1
 fi
 
-kubectl get services "$APP_SUMMON_INIT"
-kubectl get pods
+$KUBE_CLI get services "$APP_SUMMON_INIT"
+$KUBE_CLI get pods

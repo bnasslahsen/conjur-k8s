@@ -4,19 +4,19 @@ set -a
 source "./../../../.env"
 set +a
 
-kubectl config set-context --current --namespace="$APP_NAMESPACE"
+$KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
 
 # DB SECRETS
-envsubst < k8s-secrets.yml | kubectl replace --force -f -
+envsubst < k8s-secrets.yml | $KUBE_CLI replace --force -f -
 
 # Service account role binding
-envsubst < service-account-role.yml | kubectl replace --force -f -
+envsubst < service-account-role.yml | $KUBE_CLI replace --force -f -
 
 # DEPLOYMENT
-envsubst < deployment.yml | kubectl replace --force -f -
-if ! kubectl wait deployment "$APP_SECRETS_K8S_INIT" --for condition=Available=True --timeout=90s
+envsubst < deployment.yml | $KUBE_CLI replace --force -f -
+if ! $KUBE_CLI wait deployment "$APP_SECRETS_K8S_INIT" --for condition=Available=True --timeout=90s
   then exit 1
 fi
 
-kubectl get services "$APP_SECRETS_K8S_INIT"
-kubectl get pods
+$KUBE_CLI get services "$APP_SECRETS_K8S_INIT"
+$KUBE_CLI get pods

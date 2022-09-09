@@ -4,18 +4,18 @@ set -a
 source "./../.env"
 set +a
 
-kubectl delete namespace "$CONJUR_NAMESPACE" --ignore-not-found=true
-kubectl delete clusterrole "$CONJUR_CLUSTER_ROLE_NAME" --ignore-not-found=true
-kubectl create namespace "$CONJUR_NAMESPACE"
-kubectl config set-context --current --namespace="$CONJUR_NAMESPACE"
+$KUBE_CLI delete namespace "$CONJUR_NAMESPACE" --ignore-not-found=true
+$KUBE_CLI delete clusterrole "$CONJUR_CLUSTER_ROLE_NAME" --ignore-not-found=true
+$KUBE_CLI create namespace "$CONJUR_NAMESPACE"
+$KUBE_CLI config set-context --current --namespace="$CONJUR_NAMESPACE"
 
 if ! "$USE_K8S_FOLLOWER"; then
-  kubectl create serviceaccount "$CONJUR_SERVICE_ACCOUNT_NAME"
+  $KUBE_CLI create serviceaccount "$CONJUR_SERVICE_ACCOUNT_NAME"
   openssl s_client -connect "$CONJUR_MASTER_HOSTNAME":"$CONJUR_MASTER_PORT" \
     -showcerts </dev/null 2> /dev/null | \
     awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/ {print $0}' \
     > "$CONJUR_SSL_CERTIFICATE"
-  kubectl create configmap conjur-configmap \
+  $KUBE_CLI create configmap conjur-configmap \
     --from-literal authnK8sAuthenticatorID="$CONJUR_AUTHENTICATOR_ID" \
     --from-literal authnK8sClusterRole="$CONJUR_CLUSTER_ROLE_NAME" \
     --from-literal authnK8sNamespace="$CONJUR_NAMESPACE" \
@@ -29,18 +29,18 @@ else
   # Deploy the follower
   if "$IS_OCP" ; then
     # Case of Secrets synchronized from the Vault
-    envsubst < manifests/follower-operator-subscription.yml | kubectl replace --force -f -
-    envsubst < manifests/follower-operator-group.yml | kubectl replace --force -f -
+    envsubst < manifests/follower-operator-subscription.yml | $KUBE_CLI replace --force -f -
+    envsubst < manifests/follower-operator-group.yml | $KUBE_CLI replace --force -f -
   else
     # Install the operator
-    envsubst < manifests/follower-crds.yml | kubectl replace --force -f -
-    envsubst < manifests/follower-operator.yml | kubectl replace --force -f -
-    if ! kubectl wait deployment "conjur-follower-operator-controller-manager" --for condition=Available=True --timeout=60s
+    envsubst < manifests/follower-crds.yml | $KUBE_CLI replace --force -f -
+    envsubst < manifests/follower-operator.yml | $KUBE_CLI replace --force -f -
+    if ! $KUBE_CLI wait deployment "conjur-follower-operator-controller-manager" --for condition=Available=True --timeout=60s
       then exit 1
     fi
   fi
 fi
 
-kubectl create serviceaccount "$CONJUR_SERVICE_ACCOUNT_NAME"
-envsubst < manifests/service-account-role.yml | kubectl replace --force -f -
+$KUBE_CLI create serviceaccount "$CONJUR_SERVICE_ACCOUNT_NAME"
+envsubst < manifests/service-account-role.yml | $KUBE_CLI replace --force -f -
 
