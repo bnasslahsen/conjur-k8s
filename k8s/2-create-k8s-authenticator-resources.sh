@@ -22,7 +22,7 @@ if ! "$USE_K8S_FOLLOWER"; then
     --from-literal authnK8sServiceAccount="$CONJUR_SERVICE_ACCOUNT_NAME" \
     --from-literal conjurAccount="$CONJUR_ACCOUNT" \
     --from-literal conjurApplianceUrl="$CONJUR_APPLIANCE_URL" \
-    --from-literal conjurSslCertificateBase64=$(cat $CONJUR_SSL_CERTIFICATE | base64) \
+    --from-literal conjurSslCertificateBase64="$(cat $CONJUR_SSL_CERTIFICATE | base64)" \
     --from-file conjurSslCertificate="$CONJUR_SSL_CERTIFICATE"
   rm "$CONJUR_SSL_CERTIFICATE"
 else
