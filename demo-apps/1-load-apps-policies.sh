@@ -27,4 +27,8 @@ else
   conjur variable set -i "$APP_SECRETLESS_DB_PORT_PATH" -v 5432
   conjur variable set -i "$APP_SECRETLESS_DB_USERNAME_PATH" -v "$APP_POSTGRESQL_USER"
   conjur variable set -i "$APP_SECRETLESS_DB_PASSWORD_PATH" -v "$APP_POSTGRESQL_PASSWORD"
+  conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_HOST_PATH" -v "$APP_DB_NAME_MYSQL"."$APP_NAMESPACE".svc.cluster.local
+  conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_PORT_PATH" -v 3306
+  conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_USERNAME_PATH" -v "$APP_MYSQL_USER"
+  conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_PASSWORD_PATH" -v "$APP_MYSQL_PASSWORD"
 fi
