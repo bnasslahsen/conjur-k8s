@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $APP_DB_NAME
+  name: $APP_DB_NAME_POSTGRESQL
   labels:
-    app: $APP_DB_NAME
+    app: $APP_DB_NAME_POSTGRESQL
   namespace: $APP_NAMESPACE
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: $APP_DB_NAME
+      app: $APP_DB_NAME_POSTGRESQL
   template:
     metadata:
       labels:
-        app: $APP_DB_NAME
+        app: $APP_DB_NAME_POSTGRESQL
     spec:
       securityContext:
         fsGroup: 999
       serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
       containers:
-        - name: $APP_DB_NAME
+        - name: $APP_DB_NAME_POSTGRESQL
           image: postgres:13.8
           imagePullPolicy: IfNotPresent
           ports:
@@ -50,10 +50,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: $APP_DB_NAME
+  name: $APP_DB_NAME_POSTGRESQL
 spec:
   selector:
-    app: $APP_DB_NAME
+    app: $APP_DB_NAME_POSTGRESQL
   ports:
     - port: 5432
       targetPort: 5432

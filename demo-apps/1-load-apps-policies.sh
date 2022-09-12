@@ -23,7 +23,7 @@ else
   conjur variable set -i "$APP_SECRET_URL_PATH" -v jdbc:h2:mem:testdb
   conjur variable set -i "$APP_SECRET_USERNAME_PATH" -v user
   conjur variable set -i "$APP_SECRET_PASSWORD_PATH" -v pass
-  conjur variable set -i "$APP_SECRETLESS_DB_HOST_PATH" -v "$APP_DB_NAME"."$APP_NAMESPACE".svc.cluster.local
+  conjur variable set -i "$APP_SECRETLESS_DB_HOST_PATH" -v "$APP_DB_NAME_POSTGRESQL"."$APP_NAMESPACE".svc.cluster.local
   conjur variable set -i "$APP_SECRETLESS_DB_PORT_PATH" -v 5432
   conjur variable set -i "$APP_SECRETLESS_DB_USERNAME_PATH" -v "$APP_POSTGRESQL_USER"
   conjur variable set -i "$APP_SECRETLESS_DB_PASSWORD_PATH" -v "$APP_POSTGRESQL_PASSWORD"
