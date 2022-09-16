@@ -1,0 +1,77 @@
+---
+# Sidecar deployment manifest with empty centos application to consume the secrets
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: $APP_PUSH_FILE_SIDECAR
+  name: $APP_PUSH_FILE_SIDECAR
+  namespace: $APP_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: $APP_PUSH_FILE_SIDECAR
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        conjur.org/container-mode: sidecar
+        conjur.org/secrets-refresh-enabled: "true"
+        conjur.org/secrets-refresh-interval: 1m
+        conjur.org/secrets-destination: file
+        conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
+        conjur.org/conjur-secrets.test-app: |
+          - password-mysql: password-mysql
+          - password-postgres: password-postgres
+        conjur.org/secret-file-path.safe1: "./credentials.yaml"
+        conjur.org/secret-file-format.safe1: "yaml"
+      labels:
+        app: $APP_PUSH_FILE_SIDECAR
+    spec:
+      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      containers:
+      # Sidecar container
+      - image: cyberark/secrets-provider-for-k8s:latest
+        imagePullPolicy: IfNotPresent
+        name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+        env:
+          - name: CONJUR_AUTHN_LOGIN
+            value: $APP_HOST_ID
+          - name: MY_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: MY_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+          - configMapRef:
+              name: conjur-connect
+        volumeMounts:
+          - name: podinfo
+            mountPath: /conjur/podinfo
+          - name: conjur-secrets
+            mountPath: /conjur/secrets
+      # Demo container - empty centos
+      - name: $APP_PUSH_FILE_SIDECAR
+        image: $APP_IMAGE_NAME_APP_PUSH_FILE
+        imagePullPolicy: Always
+        command: ["sleep"]
+        args: ["infinity"]
+        volumeMounts:
+          - name: conjur-secrets
+            mountPath: /opt/secrets/conjur
+      volumes:
+        - name: podinfo
+          downwardAPI:
+            items:
+              - path: annotations
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.annotations
+            defaultMode: 420
+        - name: conjur-secrets
+          emptyDir:
+            medium: Memory
+---

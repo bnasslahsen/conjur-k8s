@@ -31,4 +31,5 @@ else
   conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_PORT_PATH" -v 3306
   conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_USERNAME_PATH" -v "$APP_MYSQL_USER"
   conjur variable set -i "$APP_SECRETLESS_DB_MYSQL_PASSWORD_PATH" -v "$APP_MYSQL_PASSWORD"
+  conjur variable set -i "$APP_MONGO_HOST_URI" -v "$APP_MONGO_URI"
 fi

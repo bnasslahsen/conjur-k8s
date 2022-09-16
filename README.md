@@ -72,6 +72,8 @@ Note: All the docker images are already available in dockerhub repository:
 - [`docker.io/bnasslahsen/conjur-summon-k8s-demo`](https://hub.docker.com/r/bnasslahsen/conjur-summon-k8s-demo/tags)
 - [`docker.io/bnasslahsen/conjur-secretless-k8s-demo`](https://hub.docker.com/r/bnasslahsen/conjur-secretless-k8s-demo/tags)
 - [`docker.io/bnasslahsen/conjur-springboot-k8s-demo`](https://hub.docker.com/r/bnasslahsen/conjur-springboot-k8s-demo/tags)
+- [`docker.io/bnasslahsen/conjur-k8s-mongodb`](https://hub.docker.com/r/bnasslahsen/conjur-k8s-mongodb/tags)
+- [`docker.io/bnasslahsen/conjur-k8s-mongodb-summon-demo`](https://hub.docker.com/r/bnasslahsen/conjur-k8s-mongodb-summon-demo/tags)
 
 ```shell
 cd setup/demo-apps
@@ -129,6 +131,15 @@ cd demo-apps/use-cases/secretless
 ```shell
 cd demo-apps/use-cases/springboot
 ./deploy-app.sh
+```
+
+#### Option 7 - MongoDB Samples
+```shell
+cd demo-apps/use-cases/k8s-mongodb-secrets
+./deploy-db.sh
+./deploy-app-basic.sh
+./deploy-app-summon.sh
+./deploy-app-push-to-file.sh
 ```
 
 ### Testing the applications

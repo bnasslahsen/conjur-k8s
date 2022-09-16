@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: $APP_MONGO_SUMMON_SIDECAR
+  name: $APP_MONGO_SUMMON_SIDECAR
+  namespace: $APP_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: $APP_MONGO_SUMMON_SIDECAR
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $APP_MONGO_SUMMON_SIDECAR
+    spec:
+      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      containers:
+        - name: $APP_MONGO_SUMMON_SIDECAR
+          image: $APP_IMAGE_NAME_SUMMON_MONGODB
+          imagePullPolicy: Always
+          env:
+            - name: CONJUR_AUTHN_TOKEN_FILE
+              value: /run/conjur/access-token
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
+            timeoutSeconds: 2
+            periodSeconds: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: [ "sh", "-c", "sleep 10" ]
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - mountPath: /run/conjur
+              name: conjur-access-token
+              readOnly: true
+            - mountPath: /etc/summon
+              name: summon-config
+              readOnly: true
+        - image: cyberark/conjur-authn-k8s-client
+          imagePullPolicy: Always
+          name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          env:
+            - name: CONJUR_AUTHN_LOGIN
+              value: $APP_HOST_ID
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - mountPath: /run/conjur
+              name: conjur-access-token
+          livenessProbe:
+            exec:
+              command: [ "wget", "-T2", "-O-", "http://localhost:8080/actuator/health" ]
+            initialDelaySeconds: 60
+            periodSeconds: 10
+      volumes:
+        - name: conjur-access-token
+          emptyDir:
+            medium: Memory
+        - name: summon-config
+          configMap:
+            name: summon-config-mongo-sidecar
+            defaultMode: 420
+      imagePullSecrets:
+        - name: ocirsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_MONGO_SUMMON_SIDECAR
+  namespace: $APP_NAMESPACE
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32089
+  selector:
+    app: $APP_MONGO_SUMMON_SIDECAR
+---
