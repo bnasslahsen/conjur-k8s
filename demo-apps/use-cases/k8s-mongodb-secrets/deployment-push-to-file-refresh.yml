@@ -4,13 +4,13 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: $APP_MONGO_PUSH_FILE_SIDECAR
-  name: $APP_MONGO_PUSH_FILE_SIDECAR
+    app: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
+  name: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
   namespace: $APP_NAMESPACE
 spec:
   selector:
     matchLabels:
-      app: $APP_MONGO_PUSH_FILE_SIDECAR
+      app: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
   replicas: 1
   template:
     metadata:
@@ -25,7 +25,7 @@ spec:
         conjur.org/secret-file-path.test-app: "./application.yml"
         conjur.org/secret-file-format.test-app: "template"
       labels:
-        app: $APP_MONGO_PUSH_FILE_SIDECAR
+        app: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
     spec:
       serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
       containers:
@@ -54,31 +54,28 @@ spec:
               mountPath: /conjur/secrets
             - name: conjur-templates
               mountPath: /conjur/templates
-            - mountPath: /conjur/status
-              name: conjur-status
+            - name: refresh-config
+              mountPath: /conjur/status/health-refresh.sh
+              subPath: health-refresh.sh
+          livenessProbe:
+            exec:
+              command:
+                - /conjur/status/health-refresh.sh
+            failureThreshold: 1
+            initialDelaySeconds: 30
+            periodSeconds: 5
         # Demo MongoDB App - No change in source code
-        - name: $APP_MONGO_PUSH_FILE_SIDECAR
+        - name: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
           image: $APP_IMAGE_NAME_BASIC_MONGODB
           env:
             - name: SPRING_CONFIG_LOCATION
               value: /opt/secrets/conjur/
           imagePullPolicy: Always
-          livenessProbe:
-            exec:
-              command:
-                - /conjur/status/conjur-secrets-unchanged.sh
-            failureThreshold: 1
-            initialDelaySeconds: 10
-            periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
           volumeMounts:
             - name: conjur-secrets
               mountPath: /opt/secrets/conjur
             - name: conjur-templates
               mountPath: /conjur/templates
-            - mountPath: /conjur/status
-              name: conjur-status
           ports:
             - containerPort: 8080
       volumes:
@@ -96,22 +93,23 @@ spec:
         - name: conjur-templates
           configMap:
             name: spring-boot-templates
-        - name: conjur-status
-          emptyDir:
-            medium: Memory
+        - name: refresh-config
+          configMap:
+            name: push-to-file-refresh-config
+            defaultMode: 0755
       imagePullSecrets:
         - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: $APP_MONGO_PUSH_FILE_SIDECAR
+  name: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
   namespace: $APP_NAMESPACE
 spec:
   type: NodePort
   ports:
     - port: 8080
-      nodePort: 32090
+      nodePort: 32091
   selector:
-    app: $APP_MONGO_PUSH_FILE_SIDECAR
+    app: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
 ---

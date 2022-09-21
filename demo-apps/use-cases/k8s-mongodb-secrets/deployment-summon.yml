@@ -25,13 +25,6 @@ spec:
               value: /run/conjur/access-token
           ports:
             - containerPort: 8080
-          livenessProbe:
-            httpGet:
-              path: /actuator/health
-              port: 8080
-            initialDelaySeconds: 30
-            timeoutSeconds: 2
-            periodSeconds: 3
           lifecycle:
             preStop:
               exec:
@@ -66,11 +59,6 @@ spec:
           volumeMounts:
             - mountPath: /run/conjur
               name: conjur-access-token
-          livenessProbe:
-            exec:
-              command: [ "wget", "-T2", "-O-", "http://localhost:8080/actuator/health" ]
-            initialDelaySeconds: 60
-            periodSeconds: 10
       volumes:
         - name: conjur-access-token
           emptyDir:
