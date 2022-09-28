@@ -28,7 +28,6 @@ if ! "$USE_K8S_FOLLOWER"; then
 else
   # Deploy the follower
   if "$IS_OCP" ; then
-    # Case of Secrets synchronized from the Vault
     envsubst < manifests/follower-operator-subscription.yml | $KUBE_CLI replace --force -f -
     envsubst < manifests/follower-operator-group.yml | $KUBE_CLI replace --force -f -
   else
