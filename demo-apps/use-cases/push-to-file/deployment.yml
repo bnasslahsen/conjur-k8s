@@ -31,7 +31,7 @@ spec:
       serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
       containers:
       # Sidecar container
-      - image: cyberark/secrets-provider-for-k8s:latest
+      - image: $SECRETS_PROVIDER_IMAGE
         imagePullPolicy: IfNotPresent
         name: $CONJUR_AUTH_K8S_CONTAINER_NAME
         env:

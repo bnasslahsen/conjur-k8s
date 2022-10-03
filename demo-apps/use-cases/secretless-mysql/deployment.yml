@@ -30,7 +30,7 @@ spec:
           ports:
             - containerPort: 8080
         - name: $CONJUR_AUTH_K8S_CONTAINER_NAME
-          image: docker.io/cyberark/secretless-broker:latest
+          image: $SECRETLESS_BROKER_IMAGE
           imagePullPolicy: Always
           args: ["-f", "/etc/secretless/secretless.yml"]
           ports:

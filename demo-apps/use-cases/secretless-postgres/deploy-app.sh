@@ -13,8 +13,6 @@ $KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
 $KUBE_CLI delete configmap secretless-config --ignore-not-found=true
 envsubst < secretless.template.yml > secretless.yml
 $KUBE_CLI create configmap secretless-config --from-file=secretless.yml
-$KUBE_CLI delete secret quick-start-backend-certs --ignore-not-found=true
-$KUBE_CLI create secret generic quick-start-backend-certs --from-file=pg_server_crt --from-file=pg_server_key
 rm secretless.yml
 
 

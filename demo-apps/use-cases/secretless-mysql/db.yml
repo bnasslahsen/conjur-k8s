@@ -18,7 +18,7 @@ spec:
         app: $APP_DB_NAME_MYSQL
     spec:
       containers:
-        - image: mysql:5.7
+        - image: $INTERNAL_REGISTRY/mysql:5.7
           name: $APP_DB_NAME_MYSQL
           env:
             - name: MYSQL_ROOT_PASSWORD
@@ -33,7 +33,7 @@ spec:
             - containerPort: 3306
           readinessProbe:
             exec:
-              command: ["mysql", "-h", "127.0.0.1",  "-p$APP_MYSQL_ROOT_PASSWORD", "-e", "SELECT 1"]
+              command: ["mysql", "-h", "127.0.0.1", "-u$APP_MYSQL_USER", "-p$APP_MYSQL_PASSWORD", "-e", "SELECT 1"]
             initialDelaySeconds: 20
             timeoutSeconds: 2
 ---

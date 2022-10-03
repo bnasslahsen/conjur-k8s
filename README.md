@@ -46,20 +46,25 @@ cd setup/k8s
 ./2-create-k8s-authenticator-resources.sh
 ```
 
+###  Get Kubernetes API Access Information
+```shell
+./3-get-k8s-infos.sh
+```
+
 ###  Configure Conjur to access the Kubernetes API (Conjur admin and Kubernetes cluster admin)
 ```shell
-./3-configure-conjur-for-k8s.sh
+./4-configure-conjur-for-k8s.sh
 ```
 
 ## Conjur follower Deployment (optional)
 ### Define an identity in Conjur for the Kubernetes Follower (Conjur admin)
 ```shell
-./4-load-follower-policies.sh
+./5-load-follower-policies.sh
 ```
 
 ### Deploy the follower (Kubernetes admin)
 ```shell
-./5-deploy-follower.sh
+./6-deploy-follower.sh
 ```
 Check Kubernetes Follower has the status, Ready.
 
