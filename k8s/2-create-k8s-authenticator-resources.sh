@@ -26,18 +26,6 @@ if ! "$USE_K8S_FOLLOWER"; then
     --from-file conjurSslCertificate="$CONJUR_SSL_CERTIFICATE"
   rm "$CONJUR_SSL_CERTIFICATE"
 else
-  # Deploy the follower
-  if "$IS_OCP" ; then
-    envsubst < manifests/follower-operator-subscription.yml | $KUBE_CLI replace --force -f -
-    envsubst < manifests/follower-operator-group.yml | $KUBE_CLI replace --force -f -
-  else
-    # Install the operator
-    envsubst < manifests/follower-crds.yml | $KUBE_CLI replace --force -f -
-    envsubst < manifests/follower-operator.yml | $KUBE_CLI replace --force -f -
-    if ! $KUBE_CLI wait deployment "conjur-follower-operator-controller-manager" --for condition=Available=True --timeout=60s
-      then exit 1
-    fi
-  fi
   $KUBE_CLI create serviceaccount "$CONJUR_SERVICE_ACCOUNT_NAME"
 fi
 
