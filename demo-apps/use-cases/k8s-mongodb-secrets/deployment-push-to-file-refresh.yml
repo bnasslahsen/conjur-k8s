@@ -64,6 +64,8 @@ spec:
             failureThreshold: 1
             initialDelaySeconds: 30
             periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
         # Demo MongoDB App - No change in source code
         - name: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
           image: $APP_IMAGE_NAME_BASIC_MONGODB
