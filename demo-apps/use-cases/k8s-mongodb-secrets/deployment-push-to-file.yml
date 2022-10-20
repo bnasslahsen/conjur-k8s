@@ -33,6 +33,11 @@ spec:
         - image: $SECRETS_PROVIDER_IMAGE
           imagePullPolicy: IfNotPresent
           name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /usr/local/bin/conjur-secrets-provided.sh
           env:
             - name: CONJUR_AUTHN_LOGIN
               value: $APP_HOST_ID
@@ -67,9 +72,9 @@ spec:
             exec:
               command:
                 - /conjur/status/conjur-secrets-unchanged.sh
-            failureThreshold: 1
-            initialDelaySeconds: 10
-            periodSeconds: 5
+            failureThreshold: 2
+            initialDelaySeconds: 20
+            periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
           volumeMounts:

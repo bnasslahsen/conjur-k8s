@@ -33,6 +33,11 @@ spec:
         - image: $SECRETS_PROVIDER_IMAGE
           imagePullPolicy: IfNotPresent
           name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /usr/local/bin/conjur-secrets-provided.sh
           env:
             - name: CONJUR_AUTHN_LOGIN
               value: $APP_HOST_ID
@@ -61,9 +66,9 @@ spec:
             exec:
               command:
                 - /conjur/status/health-refresh-$KUBE_PLATFORM.sh
-            failureThreshold: 1
-            initialDelaySeconds: 30
-            periodSeconds: 5
+            failureThreshold: 2
+            initialDelaySeconds: 60
+            periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 1
         # Demo MongoDB App - No change in source code
@@ -94,7 +99,7 @@ spec:
             medium: Memory
         - name: conjur-templates
           configMap:
-            name: spring-boot-templates
+            name: spring-boot-templates-refresh
         - name: refresh-config
           configMap:
             name: push-to-file-refresh-config

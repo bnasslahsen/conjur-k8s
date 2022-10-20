@@ -6,8 +6,8 @@ set +a
 
 $KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
 
-$KUBE_CLI delete configmap spring-boot-templates --ignore-not-found=true
-$KUBE_CLI create configmap spring-boot-templates --from-file=test-app.tpl
+$KUBE_CLI delete configmap spring-boot-templates-refresh --ignore-not-found=true
+$KUBE_CLI create configmap spring-boot-templates-refresh --from-file=test-app.tpl
 
 # SUMMON CONFIGMAP
 $KUBE_CLI delete configmap push-to-file-refresh-config --ignore-not-found=true
