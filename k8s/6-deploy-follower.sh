@@ -17,7 +17,7 @@ $KUBE_CLI delete configmap conjur-config --ignore-not-found=true
 $KUBE_CLI create configmap conjur-config --from-file=conjur.yml=policies/conjur.yml
 
 envsubst < manifests/follower-deployment-decomposed.yml | $KUBE_CLI replace --force -f -
-if ! $KUBE_CLI wait deployment $FOLLOWER_SERVICE_NAME --for condition=Available=True --timeout=120s
+if ! $KUBE_CLI wait deployment "$FOLLOWER_SERVICE_NAME" --for condition=Available=True --timeout=120s
   then exit 1
 fi
 

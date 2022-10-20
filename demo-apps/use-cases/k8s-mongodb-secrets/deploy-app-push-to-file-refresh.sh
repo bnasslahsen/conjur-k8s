@@ -11,7 +11,7 @@ $KUBE_CLI create configmap spring-boot-templates --from-file=test-app.tpl
 
 # SUMMON CONFIGMAP
 $KUBE_CLI delete configmap push-to-file-refresh-config --ignore-not-found=true
-$KUBE_CLI create configmap push-to-file-refresh-config --from-file=health-refresh.sh
+$KUBE_CLI create configmap push-to-file-refresh-config --from-file=health-refresh-$KUBE_PLATFORM.sh
 
 # DEPLOYMENT
 envsubst < deployment-push-to-file-refresh.yml | $KUBE_CLI replace --force -f -

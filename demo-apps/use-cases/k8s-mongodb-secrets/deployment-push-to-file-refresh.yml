@@ -55,12 +55,12 @@ spec:
             - name: conjur-templates
               mountPath: /conjur/templates
             - name: refresh-config
-              mountPath: /conjur/status/health-refresh.sh
-              subPath: health-refresh.sh
+              mountPath: /conjur/status/health-refresh-$KUBE_PLATFORM.sh
+              subPath: health-refresh-$KUBE_PLATFORM.sh
           livenessProbe:
             exec:
               command:
-                - /conjur/status/health-refresh.sh
+                - /conjur/status/health-refresh-$KUBE_PLATFORM.sh
             failureThreshold: 1
             initialDelaySeconds: 30
             periodSeconds: 5
