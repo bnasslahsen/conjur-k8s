@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: $APP_SUMMON_INIT_NOCHANGE
+  name: $APP_SUMMON_INIT_NOCHANGE
+  namespace: $APP_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: $APP_SUMMON_INIT_NOCHANGE
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $APP_SUMMON_INIT_NOCHANGE
+    spec:
+      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      containers:
+        - name: $APP_SUMMON_INIT_NOCHANGE
+          image: $APP_IMAGE_NAME_BASIC
+          command: ["/bin/sh", "-c", "/run/summon/summon --provider /run/summon/summon-conjur -f /etc/summon/secrets.yml java -jar /app/target/conjur-k8s-demo-1.0.jar" ]
+          imagePullPolicy: Always
+          env:
+            - name: CONJUR_AUTHN_TOKEN_FILE
+              value: /run/conjur/access-token
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - mountPath: /run/conjur
+              name: conjur-access-token
+              readOnly: true
+            - mountPath: /etc/summon
+              name: summon-config
+              readOnly: true
+            - name: summon-bin
+              mountPath: /run/summon
+      initContainers:
+        - name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          imagePullPolicy: Always
+          image: $CONJUR_AUTHN_K8S_IMAGE
+          env:
+            - name: CONJUR_AUTHN_LOGIN
+              value: $APP_HOST_ID
+            - name: CONTAINER_MODE
+              value: init
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - mountPath: /run/conjur
+              name: conjur-access-token
+            - mountPath: /etc/conjur/ssl
+              name: conjur-client-ssl
+            - name: summon-bin
+              mountPath: /run/summon
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - >-
+              wget -qO- https://github.com/cyberark/summon/releases/latest/download/summon-linux-amd64.tar.gz | tar xvz -C /run/summon &&
+              wget -qO- https://github.com/cyberark/summon-conjur/releases/latest/download/summon-conjur-linux-amd64.tar.gz | tar xvz -C /run/summon &&
+              /usr/local/bin/authenticator
+      volumes:
+        - name: conjur-access-token
+          emptyDir:
+            medium: Memory
+        - name: conjur-client-ssl
+          emptyDir:
+            medium: Memory
+        - name: summon-config
+          configMap:
+            name: summon-config-init-nochange
+            defaultMode: 420
+        - name: summon-bin
+          emptyDir:
+            medium: Memory
+      imagePullSecrets:
+        - name: ocirsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_SUMMON_INIT_NOCHANGE
+  namespace: $APP_NAMESPACE
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32093
+  selector:
+    app: $APP_SUMMON_INIT_NOCHANGE
+---

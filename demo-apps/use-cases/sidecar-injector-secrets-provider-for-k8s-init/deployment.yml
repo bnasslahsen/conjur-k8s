@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+  name: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+  namespace: $APP_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+      annotations:
+        conjur.org/container-mode: init
+        conjur.org/inject: "yes"
+        conjur.org/inject-type: secrets-provider
+        conjur.org/secrets-destination: "k8s_secrets"
+        conjur.org/conjur-token-receivers: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+        conjur.org/authn-identity: $APP_HOST_ID
+        conjur.org/container-name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+        conjur.org/k8s-secrets: |
+          - db-credentials-sidecar-injector-secrets-provider-for-k8s-init
+    spec:
+      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      containers:
+        - name: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+          image: $APP_IMAGE_NAME_BASIC
+          imagePullPolicy: Always
+          env:
+            - name: DB_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-sidecar-injector-secrets-provider-for-k8s-init
+                  key: url
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-sidecar-injector-secrets-provider-for-k8s-init
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-sidecar-injector-secrets-provider-for-k8s-init
+                  key: password
+          ports:
+            - containerPort: 8080
+      imagePullSecrets:
+        - name: ocirsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
+  namespace: $APP_NAMESPACE
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32082
+  selector:
+    app: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT

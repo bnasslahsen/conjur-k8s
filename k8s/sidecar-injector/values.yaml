@@ -1,0 +1,43 @@
+# Default values for cyberark-sidecar-injector.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# helm install --namespace default meow .
+#
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+# caBundle:
+csrEnabled: true
+namespaceSelectorLabel: cyberark-sidecar-injector
+# certsSecret:
+
+secretlessImage: docker.io/cyberark/secretless-broker:latest
+authenticatorImage: docker.io/cyberark/conjur-authn-k8s-client:latest
+secretsProviderImage: docker.io/cyberark/secrets-provider-for-k8s:edge
+
+sidecarInjectorImage: docker.io/cyberark/sidecar-injector:edge
+SECRETLESS_CRD_SUFFIX: ""
+conjurConfig: conjur-connect
+
+# deploymentApiVersion is the supported apiVersion for Deployments. This is the value that
+# will be set in the Deployment manifest.
+#
+# deploymentApiVersion defaults to the supported apiVersion for Deployments on the latest
+# Kubernetes release.
+#
+# If you're on an older version of Kubernetes, you can retrieve the supported apiVersion
+# for Deployments by running the shell commands below. Update deploymentApiVersion to the
+# returned.
+#
+# deploymentApiGroup=$(kubectl api-resources | \
+# grep "deployments.*deploy.*Deployment" | awk '{print $3}')
+#
+# deploymentApiVersion=$(kubectl api-versions | grep "${deploymentApiGroup}/")
+#
+# echo ${deploymentApiVersion}
+#
+deploymentApiVersion: apps/v1
