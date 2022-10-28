@@ -17,7 +17,7 @@ spec:
       annotations:
         conjur.org/container-mode: sidecar
         conjur.org/secrets-refresh-enabled: "true"
-        conjur.org/secrets-refresh-interval: 20s
+        conjur.org/secrets-refresh-interval: 10s
         conjur.org/secrets-destination: file
         conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
         conjur.org/conjur-secrets.test-app: |
@@ -72,9 +72,9 @@ spec:
             exec:
               command:
                 - /conjur/status/conjur-secrets-unchanged.sh
-            failureThreshold: 2
-            initialDelaySeconds: 20
-            periodSeconds: 10
+            failureThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 1
           volumeMounts:

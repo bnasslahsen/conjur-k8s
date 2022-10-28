@@ -17,7 +17,7 @@ spec:
       annotations:
         conjur.org/container-mode: sidecar
         conjur.org/secrets-refresh-enabled: "true"
-        conjur.org/secrets-refresh-interval: 20s
+        conjur.org/secrets-refresh-interval: 10s
         conjur.org/secrets-destination: file
         conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
         conjur.org/conjur-secrets.test-app: |
@@ -66,11 +66,11 @@ spec:
             exec:
               command:
                 - /conjur/status/health-refresh-$KUBE_PLATFORM.sh
-            failureThreshold: 2
+            failureThreshold: 1
             initialDelaySeconds: 60
-            periodSeconds: 30
+            periodSeconds: 20
             successThreshold: 1
-            timeoutSeconds: 1
+            timeoutSeconds: 10
         # Demo MongoDB App - No change in source code
         - name: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
           image: $APP_IMAGE_NAME_BASIC_MONGODB
