@@ -23,7 +23,7 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: conjur-java-sdk
-            - name: CONJUR_AUTHN_API_KEY
+            - name: CONJUR_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
@@ -54,8 +54,6 @@ spec:
               value: '8080'
           ports:
             - containerPort: 8080
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service
