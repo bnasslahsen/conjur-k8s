@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $APP_DB_NAME_MONGODB
+  labels:
+    app: $APP_DB_NAME_MONGODB
+  namespace: $APP_NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $APP_DB_NAME_MONGODB
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: $APP_DB_NAME_MONGODB
+    spec:
+      volumes:
+        - name: mongo-data
+          persistentVolumeClaim:
+            claimName: mongo-data
+      containers:
+        - image: $INTERNAL_REGISTRY/mongo
+          name: $APP_DB_NAME_MONGODB
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-data
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: $MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: $MONGO_INITDB_ROOT_PASSWORD
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: $APP_DB_NAME_MONGODB
+spec:
+  selector:
+    app: $APP_DB_NAME_MONGODB
+  ports:
+    - port: 27017
+      targetPort: 27017
