@@ -152,3 +152,5 @@ Desktop.ini
 # Ignore Gradle build output directory
 build
 admin_password
+jwks.json
+kube-info.txt
