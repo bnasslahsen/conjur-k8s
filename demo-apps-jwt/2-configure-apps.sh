@@ -32,8 +32,6 @@ $KUBE_CLI create configmap conjur-connect \
   --from-literal AUTHENTICATOR_ID="$CONJUR_AUTHENTICATOR_ID" \
   --from-file "CONJUR_SSL_CERTIFICATE=$CONJUR_SSL_CERTIFICATE"
 
-envsubst < manifests/service-account-role.yml | $KUBE_CLI replace --force -f -
-
 rm "$CONJUR_SSL_CERTIFICATE"
 
 

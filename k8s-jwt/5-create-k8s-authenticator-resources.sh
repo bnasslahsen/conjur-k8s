@@ -37,6 +37,5 @@ else
       then exit 1
     fi
   fi
-  $KUBE_CLI create serviceaccount "$CONJUR_SERVICE_ACCOUNT_NAME"
 fi
 
