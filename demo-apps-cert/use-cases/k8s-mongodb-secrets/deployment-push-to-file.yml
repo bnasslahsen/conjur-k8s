@@ -19,11 +19,11 @@ spec:
         conjur.org/secrets-refresh-enabled: "true"
         conjur.org/secrets-refresh-interval: 10s
         conjur.org/secrets-destination: file
-        conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
-        conjur.org/conjur-secrets.test-app: |
+        conjur.org/conjur-secrets-policy-path.$APP_NAME: secrets/test-app
+        conjur.org/conjur-secrets.$APP_NAME: |
           - mongo-uri
-        conjur.org/secret-file-path.test-app: "./application.yml"
-        conjur.org/secret-file-format.test-app: "template"
+        conjur.org/secret-file-path.$APP_NAME: "./application.yml"
+        conjur.org/secret-file-format.$APP_NAME: "template"
       labels:
         app: $APP_MONGO_PUSH_FILE_SIDECAR
     spec:

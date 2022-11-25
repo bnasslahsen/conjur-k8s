@@ -20,11 +20,11 @@ spec:
         conjur.org/secrets-refresh-interval: 10s
         conjur.org/secrets-destination: file
         conjur.org/jwt-token-path: /var/run/secrets/tokens/jwt
-        conjur.org/conjur-secrets-policy-path.test-app: data/bnl/jwt-apps/secrets
-        conjur.org/conjur-secrets.test-app: |
+        conjur.org/conjur-secrets-policy-path.$APP_NAME: data/bnl/jwt-apps/secrets
+        conjur.org/conjur-secrets.$APP_NAME: |
           - mongo-uri
-        conjur.org/secret-file-path.test-app: "./application.yml"
-        conjur.org/secret-file-format.test-app: "template"
+        conjur.org/secret-file-path.$APP_NAME: "./application.yml"
+        conjur.org/secret-file-format.$APP_NAME: "template"
       labels:
         app: $APP_MONGO_PUSH_FILE_REFRESH_SIDECAR
     spec:

@@ -19,8 +19,8 @@ spec:
         conjur.org/secrets-refresh-enabled: "true"
         conjur.org/secrets-refresh-interval: 1m
         conjur.org/secrets-destination: file
-        conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
-        conjur.org/conjur-secrets.test-app: |
+        conjur.org/conjur-secrets-policy-path.$APP_NAME: secrets/test-app
+        conjur.org/conjur-secrets.$APP_NAME: |
           - password-mysql: password-mysql
           - password-postgres: password-postgres
         conjur.org/secret-file-path.safe1: "./credentials.yaml"
