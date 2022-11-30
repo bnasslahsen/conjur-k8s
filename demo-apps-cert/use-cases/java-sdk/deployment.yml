@@ -52,6 +52,12 @@ spec:
               value: DEBUG
             - name: SERVER_PORT
               value: '8080'
+            - name: APP_SECRET_URL
+              value: $APP_SECRET_URL_PATH
+            - name: APP_SECRET_USERNAME
+              value: $APP_SECRET_USERNAME_PATH
+            - name: APP_SECRET_PASSWORD
+              value: $APP_SECRET_PASSWORD_PATH
           ports:
             - containerPort: 8080
 ---
