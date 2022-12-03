@@ -35,6 +35,8 @@ spec:
         imagePullPolicy: IfNotPresent
         name: $CONJUR_AUTH_K8S_CONTAINER_NAME
         env:
+          - name: JAVA_TOOL_OPTIONS
+            value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
           - name: CONJUR_AUTHN_LOGIN
             value: $APP_HOST_ID
           - name: MY_POD_NAME

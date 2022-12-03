@@ -21,6 +21,8 @@ spec:
           name: $APP_NAME_SECRETLESS_MYSQL
           imagePullPolicy: Always
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: DB_URL
               value: jdbc:mysql://localhost:3306/$APP_MYSQL_DB
             - name: DB_USERNAME

@@ -21,6 +21,8 @@ spec:
           name: $APP_NAME_SECRETLESS
           imagePullPolicy: Always
           env:
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: DB_URL
               value: jdbc:postgresql://localhost:5432/$APP_POSTGRESQL_DB
             - name: DB_USERNAME

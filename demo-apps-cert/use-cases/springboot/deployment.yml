@@ -23,6 +23,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: conjur
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: CONJUR_AUTHN_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -47,6 +49,12 @@ spec:
               value: $CONJUR_CERT_FILE
             - name: SERVER_PORT
               value: '8080'
+            - name: APP_SECRET_URL
+              value: $APP_SECRET_URL_PATH
+            - name: APP_SECRET_USERNAME
+              value: $APP_SECRET_USERNAME_PATH
+            - name: APP_SECRET_PASSWORD
+              value: $APP_SECRET_PASSWORD_PATH
           ports:
             - containerPort: 8080
           volumeMounts:
