@@ -19,7 +19,7 @@ spec:
         conjur.org/secrets-refresh-enabled: "true"
         conjur.org/secrets-refresh-interval: 1m
         conjur.org/secrets-destination: file
-        conjur.org/conjur-secrets-policy-path.$APP_NAME: secrets/test-app
+        conjur.org/conjur-secrets-policy-path.$APP_NAME: $APP_NAME_BASE_PATH/secrets
         conjur.org/conjur-secrets.$APP_NAME: |
           - password-mysql: password-mysql
           - password-postgres: password-postgres

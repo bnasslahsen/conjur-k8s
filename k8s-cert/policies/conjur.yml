@@ -1,8 +1,7 @@
 #List of authenticators enabled for this node
 authenticators:
   - authn
-  - authn-k8s/dev-cluster
-  - authn-k8s/ocp-cluster
+  - authn-k8s/$CONJUR_AUTHENTICATOR_ID
 # -----------------------------
 # Conjur configuration file
 # -----------------------------

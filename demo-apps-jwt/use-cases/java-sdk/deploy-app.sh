@@ -13,13 +13,18 @@ openssl s_client -connect "$CONJUR_MASTER_HOSTNAME":"$CONJUR_MASTER_PORT" \
   awk '/BEGIN CERTIFICATE/,/END CERTIFICATE/ {print $0}' \
   > "$CONJUR_SSL_CERTIFICATE"
 
-$KUBE_CLI delete secret conjur-ssl-cert-base64 --ignore-not-found=true
+FOLLOWER_URL="https://$FOLLOWER_SERVICE_NAME.$CONJUR_NAMESPACE.svc.cluster.local"
+if "$USE_K8S_FOLLOWER" ; then
+  APPLIANCE_URL=$FOLLOWER_URL
+else
+  APPLIANCE_URL=$CONJUR_APPLIANCE_URL
+fi
 
 $KUBE_CLI create secret generic java-sdk-credentials  \
         --from-literal=conjur-authn-api-key="$CONJUR_AUTHN_API_KEY"  \
         --from-literal=conjur-account="$CONJUR_ACCOUNT" \
         --from-literal=conjur-authn-login="$CONJUR_AUTHN_LOGIN" \
-        --from-literal=conjur-appliance-url="$CONJUR_APPLIANCE_URL"  \
+        --from-literal=conjur-appliance-url="$APPLIANCE_URL"  \
         --from-literal=conjur-ssl-cert-base64="$(cat $CONJUR_SSL_CERTIFICATE | base64)"
 
 # DEPLOYMENT

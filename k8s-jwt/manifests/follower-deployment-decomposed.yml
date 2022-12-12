@@ -1,3 +1,4 @@
+---
 apiVersion: conjur.cyberark.com/v1
 kind: ConjurFollower
 metadata:

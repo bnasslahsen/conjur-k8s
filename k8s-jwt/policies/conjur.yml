@@ -1,7 +1,7 @@
 #List of authenticators enabled for this node
 authenticators:
   - authn
-  - authn-jwt/jwt-cluster
+  - authn-jwt/$CONJUR_AUTHENTICATOR_ID
 # -----------------------------
 # Conjur configuration file
 # -----------------------------
