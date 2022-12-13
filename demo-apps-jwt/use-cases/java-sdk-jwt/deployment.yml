@@ -60,8 +60,19 @@ spec:
               value: $APP_SECRET_USERNAME_PATH
             - name: APP_SECRET_PASSWORD
               value: $APP_SECRET_PASSWORD_PATH
+          volumeMounts:
+            - name: jwt-token
+              mountPath: /var/run/secrets/tokens
           ports:
             - containerPort: 8080
+      volumes:
+        - name: jwt-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: jwt
+                  expirationSeconds: 6000
+                  audience: conjur
 ---
 apiVersion: v1
 kind: Service
