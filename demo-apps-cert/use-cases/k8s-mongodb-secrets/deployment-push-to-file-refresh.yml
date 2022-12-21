@@ -104,8 +104,6 @@ spec:
           configMap:
             name: push-to-file-refresh-config
             defaultMode: 0755
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service

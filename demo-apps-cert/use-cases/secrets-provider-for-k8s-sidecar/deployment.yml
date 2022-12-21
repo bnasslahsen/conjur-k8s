@@ -89,8 +89,6 @@ spec:
                   fieldPath: metadata.annotations
                 path: annotations
           name: podinfo
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service

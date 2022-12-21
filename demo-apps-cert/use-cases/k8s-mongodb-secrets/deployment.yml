@@ -28,8 +28,6 @@ spec:
                   key: uri
           ports:
             - containerPort: 8080
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service

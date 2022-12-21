@@ -85,8 +85,6 @@ spec:
         - name: summon-bin
           emptyDir:
             medium: Memory
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service

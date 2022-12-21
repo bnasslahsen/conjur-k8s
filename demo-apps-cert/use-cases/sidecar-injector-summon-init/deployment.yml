@@ -45,8 +45,6 @@ spec:
           configMap:
             name: sidecar-injector-summon-config-init
             defaultMode: 420
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service

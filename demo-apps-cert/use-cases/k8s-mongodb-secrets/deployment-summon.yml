@@ -67,8 +67,6 @@ spec:
           configMap:
             name: summon-config-mongo-sidecar
             defaultMode: 420
-      imagePullSecrets:
-        - name: ocirsecret
 ---
 apiVersion: v1
 kind: Service
