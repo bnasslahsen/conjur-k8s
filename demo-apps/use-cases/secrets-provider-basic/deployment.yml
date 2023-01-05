@@ -1,0 +1,114 @@
+---
+# Creating a role for consuming secrets
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: conjur-demo-allow-to-read-secrets
+  namespace: $APP_NAMESPACE
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: [ "get", "update" ]
+---
+# Binding the role to the SA
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  namespace: $APP_NAMESPACE
+  name: conjur-demo-allow-to-read-secrets-binding
+subjects:
+  - kind: ServiceAccount
+    namespace: $APP_NAMESPACE
+    name: $APP_SERVICE_ACCOUNT_NAME
+roleRef:
+  kind: Role
+  apiGroup: rbac.authorization.k8s.io
+  name: conjur-demo-allow-to-read-secrets
+---
+# Mapping conjur variables to a k8s secrets map
+apiVersion: v1
+kind: Secret
+metadata:
+  name: conjur-demo-credentials
+  namespace: $APP_NAMESPACE
+type: Opaque
+stringData:
+  placeholder: dummy
+  conjur-map: |-
+    db-username: secrets/test-app/username-mysql
+    db-password: secrets/test-app/password-mysql
+---
+# Deployment for Conjur secrets provider - push to secrets mode as init container
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: conjur-push-to-kubernetes-secrets
+  name: demo-init-container-kubernetes-secrets
+  namespace: $APP_NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: conjur-push-to-kubernetes-secrets
+  template:
+    metadata:
+      labels:
+        app: conjur-push-to-kubernetes-secrets
+      annotations:
+        # Secrets Provider configuration
+        conjur.org/container-mode: init
+    spec:
+      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      containers:
+        # Our demo application
+        - name: demo-application
+          image: centos:latest
+          imagePullPolicy: Always
+          command: ["sleep"]
+          args: ["infinity"]
+          # Mapping to the secrets
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: conjur-demo-credentials
+                  key: db-username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: conjur-demo-credentials
+                  key: db-password
+      # Secrets Provider in Init Container mode
+      initContainers:
+        - image: $SECRETS_PROVIDER_IMAGE
+          imagePullPolicy: Always
+          name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          env:
+            - name: CONJUR_AUTHN_LOGIN
+              value: $APP_HOST_ID
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: K8S_SECRETS
+              value: conjur-demo-credentials
+            - name: SECRETS_DESTINATION
+              value: k8s_secrets
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - name: podinfo
+              mountPath: /conjur/podinfo
+      volumes:
+        - name: podinfo
+          downwardAPI:
+            items:
+              - path: annotations
+                fieldRef:
+                  fieldPath: metadata.annotations

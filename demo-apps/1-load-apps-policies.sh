@@ -20,9 +20,9 @@ else
   conjur policy update -b root -f app-secrets.yml.tmp
   rm app-secrets.yml.tmp
   # Set variables
-  conjur variable set -i "$APP_SECRET_URL_PATH" -v jdbc:h2:mem:testdb
-  conjur variable set -i "$APP_SECRET_USERNAME_PATH" -v user
-  conjur variable set -i "$APP_SECRET_PASSWORD_PATH" -v pass
+  conjur variable set -i "$APP_SECRET_URL_PATH" -v mysql://test-db-mysql.bnl-test-app-namespace.svc.cluster.local:3306/test_db
+  conjur variable set -i "$APP_SECRET_USERNAME_PATH" -v test_db
+  conjur variable set -i "$APP_SECRET_PASSWORD_PATH" -v 5b3e5f75cb3cdc725fe40318
   conjur variable set -i "$APP_SECRETLESS_DB_HOST_PATH" -v "$APP_DB_NAME_POSTGRESQL"."$APP_NAMESPACE".svc.cluster.local
   conjur variable set -i "$APP_SECRETLESS_DB_PORT_PATH" -v 5432
   conjur variable set -i "$APP_SECRETLESS_DB_USERNAME_PATH" -v "$APP_POSTGRESQL_USER"

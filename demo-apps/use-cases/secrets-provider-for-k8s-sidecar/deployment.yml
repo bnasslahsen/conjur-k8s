@@ -40,6 +40,8 @@ spec:
                 secretKeyRef:
                   name: db-credentials-secrets-provider-for-k8s-sidecar
                   key: password
+            - name: DB_PLATFORM
+              value: mysql
           ports:
             - containerPort: 8080
         - image: $SECRETS_PROVIDER_IMAGE

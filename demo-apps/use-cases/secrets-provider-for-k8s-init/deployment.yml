@@ -36,6 +36,8 @@ spec:
                 secretKeyRef:
                   name: db-credentials-secrets-provider-for-k8s-init
                   key: password
+            - name: DB_PLATFORM
+              value: mysql
           ports:
             - containerPort: 8080
       initContainers:

@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $APP_DB_NAME_MYSQL
+  labels:
+    app: $APP_DB_NAME_MYSQL
+  namespace: $APP_NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: $APP_DB_NAME_MYSQL
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: $APP_DB_NAME_MYSQL
+    spec:
+      containers:
+        - image: $INTERNAL_REGISTRY/mysql:5.7
+          name: $APP_DB_NAME_MYSQL
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: $APP_MYSQL_ROOT_PASSWORD
+            - name: MYSQL_DATABASE
+              value: $APP_MYSQL_DB
+            - name: MYSQL_USER
+              value: $APP_MYSQL_USER
+            - name: MYSQL_PASSWORD
+              value: $APP_MYSQL_PASSWORD
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysql", "-h", "127.0.0.1", "-u$APP_MYSQL_USER", "-p$APP_MYSQL_PASSWORD", "-e", "SELECT 1"]
+            initialDelaySeconds: 20
+            timeoutSeconds: 2
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: $APP_DB_NAME_MYSQL
+spec:
+  selector:
+    app: $APP_DB_NAME_MYSQL
+  ports:
+    - port: 3306
+      targetPort: 3306
