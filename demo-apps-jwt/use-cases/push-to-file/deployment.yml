@@ -1,79 +1,86 @@
 ---
-# Sidecar deployment manifest with empty centos application to consume the secrets
+# Deployment for Conjur Secrets Provider - push to file mode as sidecar
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: $APP_PUSH_FILE_SIDECAR
-  name: $APP_PUSH_FILE_SIDECAR
+    app: conjur-push-to-file
+  name: demo-sidecar-push-to-file
   namespace: $APP_NAMESPACE
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: $APP_PUSH_FILE_SIDECAR
-  replicas: 1
+      app: conjur-push-to-file
   template:
     metadata:
+      labels:
+        app: conjur-push-to-file
       annotations:
         conjur.org/container-mode: sidecar
-        conjur.org/secrets-refresh-enabled: "true"
-        conjur.org/secrets-refresh-interval: 1m
         conjur.org/secrets-destination: file
-        conjur.org/conjur-secrets-policy-path.$APP_NAME: secrets/test-app
-        conjur.org/conjur-secrets.$APP_NAME: |
+        conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
+        conjur.org/jwt-token-path: /var/run/secrets/tokens/jwt
+        conjur.org/conjur-secrets.test-app: |
+          - username-mysql: username-mysql
           - password-mysql: password-mysql
-          - password-postgres: password-postgres
+          - db-url: url
         conjur.org/secret-file-path.safe1: "./credentials.yaml"
         conjur.org/secret-file-format.safe1: "yaml"
-      labels:
-        app: $APP_PUSH_FILE_SIDECAR
+        conjur.org/secrets-refresh-interval: 10s
+        conjur.org/secrets-refresh-enabled: "true"
     spec:
       serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
       containers:
-      # Sidecar container
-      - image: $SECRETS_PROVIDER_IMAGE
-        imagePullPolicy: IfNotPresent
-        name: $CONJUR_AUTH_K8S_CONTAINER_NAME
-        env:
-          - name: JAVA_TOOL_OPTIONS
-            value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
-          - name: CONJUR_AUTHN_LOGIN
-            value: $APP_HOST_ID
-          - name: MY_POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: MY_POD_NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-        envFrom:
-          - configMapRef:
-              name: conjur-connect
-        volumeMounts:
-          - name: podinfo
-            mountPath: /conjur/podinfo
-          - name: conjur-secrets
-            mountPath: /conjur/secrets
-      # Demo container - empty centos
-      - name: $APP_PUSH_FILE_SIDECAR
-        image: $APP_IMAGE_NAME_APP_PUSH_FILE
-        imagePullPolicy: Always
-        command: ["sleep"]
-        args: ["infinity"]
-        volumeMounts:
-          - name: conjur-secrets
-            mountPath: /opt/secrets/conjur
+        # Our demo application
+        - name: demo-application
+          image: centos:latest
+          imagePullPolicy: Always
+          command: ["sleep"]
+          args: ["infinity"]
+          # Path to the file with the secrets
+          volumeMounts:
+            - name: conjur-secrets
+              mountPath: /opt/secrets/conjur
+              readOnly: true
+        # Sidecar container
+        - image: $SECRETS_PROVIDER_IMAGE
+          imagePullPolicy: IfNotPresent
+          name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          env:
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - name: conjur-status
+              mountPath: /conjur/status
+            - name: podinfo
+              mountPath: /conjur/podinfo
+            - name: conjur-secrets
+              mountPath: /conjur/secrets
+            - name: jwt-token
+              mountPath: /var/run/secrets/tokens
       volumes:
+        - name: conjur-status
+          emptyDir:
+            medium: Memory
         - name: podinfo
           downwardAPI:
             items:
               - path: annotations
                 fieldRef:
-                  apiVersion: v1
                   fieldPath: metadata.annotations
-            defaultMode: 420
         - name: conjur-secrets
           emptyDir:
             medium: Memory
----
+        - name: jwt-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  path: jwt
+                  expirationSeconds: 6000
+                  audience: conjur

@@ -14,8 +14,8 @@ openssl s_client -connect "$CONJUR_MASTER_HOSTNAME":"$CONJUR_MASTER_PORT" \
 $KUBE_CLI delete configmap conjur-cert --ignore-not-found=true
 $KUBE_CLI create configmap conjur-cert --from-file=conjur.pem="$CONJUR_SSL_CERTIFICATE"
 $KUBE_CLI delete configmap conjur-config --ignore-not-found=true
-envsubst < policies/conjur.yml.tmp > conjur.yml
-$KUBE_CLI create configmap conjur-config --from-file=conjur.yml=policies/conjur.yml.tmp
+envsubst < policies/conjur.yml > conjur.yml.tmp
+$KUBE_CLI create configmap conjur-config --from-file=conjur.yml=conjur.yml.tmp
 rm conjur.yml.tmp
 envsubst < manifests/follower-deployment-decomposed.yml | $KUBE_CLI replace --force -f -
 
