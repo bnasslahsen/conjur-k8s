@@ -13,6 +13,12 @@ if ! $KUBE_CLI wait deployment "$APP_DB_NAME_MYSQL" --for condition=Available=Tr
 fi
 
 # DB SECRETS
+kubectl delete secret db-credentials --ignore-not-found=true
+kubectl create secret generic db-credentials \
+    --from-literal=url=mysql://"$APP_DB_NAME_MYSQL"."$APP_NAMESPACE".svc.cluster.local:3306/"$APP_MYSQL_DB" \
+    --from-literal=username="$APP_MYSQL_USER" \
+    --from-literal=password="$APP_MYSQL_PASSWORD"
+
 envsubst < k8s-secrets.yml | $KUBE_CLI replace --force -f -
 
 # DEPLOYMENT

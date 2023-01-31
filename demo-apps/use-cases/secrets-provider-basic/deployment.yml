@@ -35,8 +35,8 @@ type: Opaque
 stringData:
   placeholder: dummy
   conjur-map: |-
-    db-username: secrets/test-app/username-mysql
-    db-password: secrets/test-app/password-mysql
+    db-username: $APP_SECRETLESS_DB_MYSQL_USERNAME_PATH
+    db-password: $APP_SECRETLESS_DB_MYSQL_PASSWORD_PATH
 ---
 # Deployment for Conjur secrets provider - push to secrets mode as init container
 apiVersion: apps/v1

@@ -16,9 +16,6 @@ $KUBE_CLI create configmap secretless-config --from-file=secretless.yml
 rm secretless.yml
 
 
-# Service account role binding
-envsubst < service-account-role.yml | $KUBE_CLI replace --force -f -
-
 # DB DEPLOYMENT
 envsubst < db.yml | $KUBE_CLI replace --force -f -
 if ! $KUBE_CLI wait deployment "$APP_DB_NAME_POSTGRESQL" --for condition=Available=True --timeout=120s

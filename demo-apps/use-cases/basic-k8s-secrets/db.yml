@@ -18,7 +18,7 @@ spec:
         app: $APP_DB_NAME_MYSQL
     spec:
       containers:
-        - image: $INTERNAL_REGISTRY/mysql:5.7
+        - image: rhel8/mysql-80
           name: $APP_DB_NAME_MYSQL
           env:
             - name: MYSQL_ROOT_PASSWORD
@@ -29,6 +29,8 @@ spec:
               value: $APP_MYSQL_USER
             - name: MYSQL_PASSWORD
               value: $APP_MYSQL_PASSWORD
+            - name: MYSQL_DEFAULT_AUTHENTICATION_PLUGIN
+              value: mysql_native_password
           ports:
             - containerPort: 3306
           readinessProbe:
