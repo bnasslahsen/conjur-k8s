@@ -19,8 +19,6 @@ kubectl create secret generic db-credentials \
     --from-literal=username="$APP_MYSQL_USER" \
     --from-literal=password="$APP_MYSQL_PASSWORD"
 
-envsubst < k8s-secrets.yml | $KUBE_CLI replace --force -f -
-
 # DEPLOYMENT
 envsubst < deployment.yml | $KUBE_CLI replace --force -f -
 if ! $KUBE_CLI wait deployment "$APP_NAME" --for condition=Available=True --timeout=90s

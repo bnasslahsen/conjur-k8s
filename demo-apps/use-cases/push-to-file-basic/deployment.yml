@@ -20,7 +20,7 @@ spec:
         # Secrets Provider configuration
         conjur.org/container-mode: sidecar
         conjur.org/secrets-destination: file
-        conjur.org/conjur-secrets-policy-path.test-app: secrets/test-app
+        conjur.org/conjur-secrets-policy-path.test-app: secrets/$APP_NAME
         conjur.org/conjur-secrets.test-app: |
           - username-mysql: username-mysql
           - password-mysql: password-mysql
