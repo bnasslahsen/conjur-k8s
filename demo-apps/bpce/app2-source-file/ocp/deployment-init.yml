@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: $APP_NAME
+  name: $APP_NAME
+  namespace: $APP_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app: $APP_NAME
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $APP_NAME
+      annotations:
+        # Secrets Provider configuration
+        conjur.org/container-mode: init
+        conjur.org/secrets-destination: file
+        conjur.org/conjur-secrets-policy-path.test-app: secrets/$APP_NAME
+        conjur.org/conjur-secrets.test-app: |
+          - DB_USERNAME: username
+          - DB_PASSWORD: password
+          - DB_URL: url
+        conjur.org/secret-file-path.test-app: "./credentials.properties"
+        conjur.org/secret-file-format.test-app: "bash"
+    spec:
+      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      containers:
+        - name: $APP_NAME
+          image: docker.io/bnasslahsen/conjur-k8s-demo
+          command: [ "/bin/sh", "-c", "source /opt/secrets/conjur/credentials.properties && rm /opt/secrets/conjur/credentials.properties &&  java -jar /app/target/conjur-k8s-demo-2.0.jar" ]
+          imagePullPolicy: Always
+          # Path to the file with the secrets
+          volumeMounts:
+            - name: conjur-secrets
+              mountPath: /opt/secrets/conjur
+          ports:
+            - containerPort: 8080
+      initContainers:
+        - image: registry.connect.redhat.com/cyberark/secrets-provider-for-k8s
+          imagePullPolicy: IfNotPresent
+          name: configurator
+          env:
+            - name: CONJUR_AUTHN_LOGIN
+              value: $APP_HOST_ID
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+          volumeMounts:
+            - name: podinfo
+              mountPath: /conjur/podinfo
+            - name: conjur-secrets
+              mountPath: /conjur/secrets
+      volumes:
+        - name: conjur-secrets
+          emptyDir:
+            medium: Memory
+        - downwardAPI:
+            defaultMode: 420
+            items:
+              - fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.annotations
+                path: annotations
+          name: podinfo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: $APP_NAME
+  namespace: $APP_NAMESPACE
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32082
+  selector:
+    app: $APP_NAME
