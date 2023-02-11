@@ -1,47 +1,49 @@
+---
+# Deployment for Conjur Secrets Provider - push to file mode as sidecar
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: $APP_NAME
-  name: $APP_NAME
+    app: conjur-push-to-file
+  name: demo-sidecar-push-to-file
   namespace: $APP_NAMESPACE
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: $APP_NAME
-  replicas: 1
+      app: conjur-push-to-file
   template:
     metadata:
       labels:
-        app: $APP_NAME
+        app: conjur-push-to-file
       annotations:
-        # Secrets Provider configuration
         conjur.org/container-mode: sidecar
         conjur.org/secrets-destination: file
         conjur.org/conjur-secrets-policy-path.test-app: jwt-apps/secrets
         conjur.org/jwt-token-path: /var/run/secrets/tokens/jwt
         conjur.org/conjur-secrets.test-app: |
-          - DB_USERNAME: username
-          - DB_PASSWORD: password
-          - DB_URL: url
-        conjur.org/secret-file-path.test-app: "./credentials.properties"
-        conjur.org/secret-file-format.test-app: "bash"
-        conjur.org/secrets-refresh-interval: 60s
+          - username-mysql: username-mysql
+          - password-mysql: password-mysql
+          - db-url: url
+        conjur.org/secret-file-path.safe1: "./credentials.yaml"
+        conjur.org/secret-file-format.safe1: "yaml"
+        conjur.org/secrets-refresh-interval: 10s
         conjur.org/secrets-refresh-enabled: "true"
     spec:
       serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
       containers:
-        - name: $APP_NAME
-          image: $APP_IMAGE_NAME_BASIC
-          imagePullPolicy: IfNotPresent
-          command: [ "/bin/sh", "-c", "source /opt/secrets/conjur/credentials.properties && java -jar /app/target/conjur-k8s-demo-2.0.jar" ]
+        # Our demo application
+        - name: demo-application
+          image: centos:latest
+          imagePullPolicy: Always
+          command: ["sleep"]
+          args: ["infinity"]
           # Path to the file with the secrets
           volumeMounts:
             - name: conjur-secrets
               mountPath: /opt/secrets/conjur
               readOnly: true
-          ports:
-            - containerPort: 8080
+        # Sidecar container
         - image: $SECRETS_PROVIDER_IMAGE
           imagePullPolicy: IfNotPresent
           name: $CONJUR_AUTH_K8S_CONTAINER_NAME
@@ -82,16 +84,3 @@ spec:
                   path: jwt
                   expirationSeconds: 6000
                   audience: conjur
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: $APP_NAME
-  namespace: $APP_NAMESPACE
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      nodePort: 32082
-  selector:
-    app: $APP_NAME
