@@ -31,14 +31,14 @@ spec:
               value: dummy
           ports:
             - containerPort: 8080
-        - name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+        - name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
           image: $SECRETLESS_BROKER_IMAGE
           imagePullPolicy: Always
           args: ["-f", "/etc/secretless/secretless.yml"]
           ports:
             - containerPort: 5432
           env:
-            - name: CONJUR_AUTHN_LOGIN
+            - name: CYBERARK_CONJUR_AUTHN_LOGIN
               value: $APP_HOST_ID
             - name: MY_POD_NAME
               valueFrom:

@@ -2,7 +2,7 @@ apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
   name: conjur-opr-group
-  namespace: $CONJUR_NAMESPACE
+  namespace: $CYBERARK_CONJUR_NAMESPACE
 spec:
   targetNamespaces:
-    - $CONJUR_NAMESPACE
+    - $CYBERARK_CONJUR_NAMESPACE

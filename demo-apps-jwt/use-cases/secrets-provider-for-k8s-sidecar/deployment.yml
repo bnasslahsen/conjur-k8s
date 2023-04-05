@@ -46,7 +46,7 @@ spec:
             - containerPort: 8080
         - image: $SECRETS_PROVIDER_IMAGE
           imagePullPolicy: Always
-          name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
           volumeMounts:
             - name: conjur-status
               mountPath: /conjur/status

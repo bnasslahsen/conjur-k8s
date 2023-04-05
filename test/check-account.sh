@@ -11,4 +11,4 @@ kubectl exec \
         -n $APP_NAMESPACE \
         $APP_POD_NAME \
         -c $AUTHN_CONTAINER \
-        -- printenv CONJUR_ACCOUNT
+        -- printenv CYBERARK_CONJUR_ACCOUNT

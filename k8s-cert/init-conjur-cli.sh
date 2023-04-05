@@ -5,8 +5,8 @@ source "./../.env"
 set +a
 
 # Global Variables
-conjurURL=$CONJUR_MASTER_HOSTNAME:$CONJUR_MASTER_PORT
-conjurAccount=$CONJUR_ACCOUNT
+conjurURL=$CYBERARK_CONJUR_MASTER_HOSTNAME:$CYBERARK_CONJUR_MASTER_PORT
+conjurAccount=$CYBERARK_CONJUR_ACCOUNT
 conjurUser=admin
 conjurPassword="$(cat admin_password)"
 

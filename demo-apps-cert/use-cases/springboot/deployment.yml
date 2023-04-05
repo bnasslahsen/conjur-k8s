@@ -25,28 +25,28 @@ spec:
               value: conjur
             - name: JAVA_TOOL_OPTIONS
               value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
-            - name: CONJUR_AUTHN_API_KEY
+            - name: CYBERARK_CONJUR_AUTHN_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: springboot-credentials
                   key: conjur-authn-api-key
-            - name: CONJUR_AUTHN_LOGIN
+            - name: CYBERARK_CONJUR_AUTHN_LOGIN
               valueFrom:
                 secretKeyRef:
                   name: springboot-credentials
                   key: conjur-authn-login
-            - name: CONJUR_ACCOUNT
+            - name: CYBERARK_CONJUR_ACCOUNT
               valueFrom:
                 secretKeyRef:
                   name: springboot-credentials
                   key: conjur-account
-            - name: CONJUR_APPLIANCE_URL
+            - name: CYBERARK_CONJUR_APPLIANCE_URL
               valueFrom:
                 secretKeyRef:
                   name: springboot-credentials
                   key: conjur-appliance-url
-            - name: CONJUR_CERT_FILE
-              value: $CONJUR_CERT_FILE
+            - name: CYBERARK_CONJUR_CERT_FILE
+              value: $CYBERARK_CONJUR_CERT_FILE
             - name: SERVER_PORT
               value: '8080'
             - name: APP_SECRET_URL
@@ -58,7 +58,7 @@ spec:
           ports:
             - containerPort: 8080
           volumeMounts:
-            - mountPath: $CONJUR_CERT_PATH
+            - mountPath: $CYBERARK_CONJUR_CERT_PATH
               name: conjur-ssl-cert
               readOnly: true
       volumes:

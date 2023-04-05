@@ -4,7 +4,7 @@
 # == Enroll a Kubernetes authentication service
 # =================================================
 - !policy
-  id: conjur/authn-jwt/$CONJUR_AUTHENTICATOR_ID
+  id: conjur/authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID
   body:
     - !webservice
 

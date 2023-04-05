@@ -21,7 +21,7 @@ spec:
         conjur.org/secrets-destination: "k8s_secrets"
         conjur.org/conjur-token-receivers: $APP_SIDECAR_INJECTOR_SECRETS_K8S_INIT
         conjur.org/authn-identity: $APP_HOST_ID
-        conjur.org/container-name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+        conjur.org/container-name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
         conjur.org/k8s-secrets: |
           - db-credentials-sidecar-injector-secrets-provider-for-k8s-init
     spec:

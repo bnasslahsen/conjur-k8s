@@ -44,7 +44,7 @@ spec:
             - containerPort: 8080
         - image: $SECRETS_PROVIDER_IMAGE
           imagePullPolicy: IfNotPresent
-          name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
           env:
             - name: MY_POD_NAMESPACE
               valueFrom:

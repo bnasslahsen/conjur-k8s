@@ -22,7 +22,7 @@ spec:
           command: ["/bin/sh", "-c", "/run/summon/summon --provider /run/summon/summon-conjur -f /etc/summon/secrets.yml java -jar /app/target/conjur-k8s-demo-1.0.jar" ]
           imagePullPolicy: Always
           env:
-            - name: CONJUR_AUTHN_TOKEN_FILE
+            - name: CYBERARK_CONJUR_AUTHN_TOKEN_FILE
               value: /run/conjur/access-token
           ports:
             - containerPort: 8080
@@ -39,11 +39,11 @@ spec:
             - name: summon-bin
               mountPath: /run/summon
       initContainers:
-        - name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+        - name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
           imagePullPolicy: Always
-          image: $CONJUR_AUTHN_K8S_IMAGE
+          image: $CYBERARK_CONJUR_AUTHN_K8S_IMAGE
           env:
-            - name: CONJUR_AUTHN_LOGIN
+            - name: CYBERARK_CONJUR_AUTHN_LOGIN
               value: $APP_HOST_ID
             - name: CONTAINER_MODE
               value: init

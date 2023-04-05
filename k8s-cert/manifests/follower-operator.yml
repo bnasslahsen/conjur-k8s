@@ -11,7 +11,7 @@ metadata:
   labels:
     control-plane: controller-manager
   name: conjur-follower-operator-controller-manager
-  namespace: $CONJUR_NAMESPACE
+  namespace: $CYBERARK_CONJUR_NAMESPACE
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -170,13 +170,13 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: conjur-follower-operator-controller-manager
-    namespace: $CONJUR_NAMESPACE
+    namespace: $CYBERARK_CONJUR_NAMESPACE
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: conjur-follower-operator-controller-manager
-  namespace: $CONJUR_NAMESPACE
+  namespace: $CYBERARK_CONJUR_NAMESPACE
 spec:
   replicas: 1
   selector:

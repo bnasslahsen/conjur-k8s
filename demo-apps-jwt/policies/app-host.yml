@@ -4,11 +4,11 @@
     - !host
       id: system:serviceaccount:$APP_NAMESPACE:$APP_SERVICE_ACCOUNT_NAME
       annotations:
-        authn-jwt/$CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
-        authn-jwt/$CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_SERVICE_ACCOUNT_NAME
+        authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+        authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_SERVICE_ACCOUNT_NAME
 
 - !grant
   roles:
-    - !group conjur/authn-jwt/$CONJUR_AUTHENTICATOR_ID/apps
+    - !group conjur/authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/apps
   members:
     - !host $APP_NAME_BASE_PATH/system:serviceaccount:$APP_NAMESPACE:$APP_SERVICE_ACCOUNT_NAME

@@ -1,7 +1,7 @@
 #List of authenticators enabled for this node
 authenticators:
   - authn
-  - authn-jwt/$CONJUR_AUTHENTICATOR_ID
+  - authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID
 # -----------------------------
 # Conjur configuration file
 # -----------------------------
@@ -18,7 +18,7 @@ authenticators:
 # These configuration values are loaded by the Conjur process at startup and can
 # be overridden by providing environment variables of the same name prefixed by
 # CONJUR. For example, you can override the trusted_proxies value from this
-# file by setting CONJUR_TRUSTED_PROXIES in the environment.
+# file by setting CYBERARK_CONJUR_TRUSTED_PROXIES in the environment.
 
 # Trusted proxies ensures that DAP can properly source client IP addresses.
 #

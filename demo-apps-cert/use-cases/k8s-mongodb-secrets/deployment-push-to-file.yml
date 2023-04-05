@@ -32,14 +32,14 @@ spec:
         # Sidecar container
         - image: $SECRETS_PROVIDER_IMAGE
           imagePullPolicy: IfNotPresent
-          name: $CONJUR_AUTH_K8S_CONTAINER_NAME
+          name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
           lifecycle:
             postStart:
               exec:
                 command:
                   - /usr/local/bin/conjur-secrets-provided.sh
           env:
-            - name: CONJUR_AUTHN_LOGIN
+            - name: CYBERARK_CONJUR_AUTHN_LOGIN
               value: $APP_HOST_ID
             - name: MY_POD_NAME
               valueFrom:

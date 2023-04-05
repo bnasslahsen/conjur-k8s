@@ -25,27 +25,27 @@ spec:
               value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: SPRING_PROFILES_ACTIVE
               value: conjur-java-sdk
-            - name: CONJUR_API_KEY
+            - name: CYBERARK_CONJUR_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-authn-api-key
-            - name: CONJUR_AUTHN_LOGIN
+            - name: CYBERARK_CONJUR_AUTHN_LOGIN
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-authn-login
-            - name: CONJUR_ACCOUNT
+            - name: CYBERARK_CONJUR_ACCOUNT
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-account
-            - name: CONJUR_APPLIANCE_URL
+            - name: CYBERARK_CONJUR_APPLIANCE_URL
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-appliance-url
-            - name: CONJUR_SSL_CERTIFICATE
+            - name: CYBERARK_CONJUR_SSL_CERTIFICATE
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
