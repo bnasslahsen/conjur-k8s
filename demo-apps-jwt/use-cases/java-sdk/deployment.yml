@@ -21,31 +21,29 @@ spec:
           image: $APP_IMAGE_NAME_JAVA_SDK
           imagePullPolicy: Always
           env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: SPRING_PROFILES_ACTIVE
               value: conjur-java-sdk
-            - name: CYBERARK_CONJUR_API_KEY
+            - name: CONJUR_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-authn-api-key
-            - name: CYBERARK_CONJUR_AUTHN_LOGIN
+            - name: CONJUR_AUTHN_LOGIN
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-authn-login
-            - name: CYBERARK_CONJUR_ACCOUNT
+            - name: CONJUR_ACCOUNT
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-account
-            - name: CYBERARK_CONJUR_APPLIANCE_URL
+            - name: CONJUR_APPLIANCE_URL
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials
                   key: conjur-appliance-url
-            - name: CYBERARK_CONJUR_SSL_CERTIFICATE
+            - name: CONJUR_SSL_CERTIFICATE
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials

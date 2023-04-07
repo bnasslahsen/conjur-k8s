@@ -30,12 +30,12 @@ spec:
                 secretKeyRef:
                   name: java-sdk-credentials-jwt
                   key: conjur-account
-            - name: CYBERARK_CONJUR_SSL_CERTIFICATE
+            - name: CONJUR_SSL_CERTIFICATE
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials-jwt
                   key: conjur-ssl-cert-base64
-            - name: CYBERARK_CONJUR_SERVICE_ID
+            - name: CONJUR_SERVICE_ID
               valueFrom:
                 secretKeyRef:
                   name: java-sdk-credentials-jwt

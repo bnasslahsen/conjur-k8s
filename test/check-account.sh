@@ -1,5 +1,5 @@
 # Set environment. Modify as necessary to match your setup.
-APP_NAMESPACE="bnl-test-app-namespace"
+APP_NAMESPACE="bnl-demo-app-ns"
 APP_POD_LABEL="app=test-app-secretless"
 AUTHN_CONTAINER="configurator"
 

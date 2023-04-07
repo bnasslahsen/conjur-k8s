@@ -5,7 +5,7 @@ source "./../../../.env"
 set +a
 
 #oc adm policy add-scc-to-user anyuid system:serviceaccount:$APP_NAMESPACE:$APP_SERVICE_ACCOUNT_NAME
-#oc adm policy add-scc-to-user anyuid system:serviceaccount:bnl-test-app-namespace:test-app-sa
+#oc adm policy add-scc-to-user anyuid system:serviceaccount:bnl-demo-app-ns:test-app-sa
 #https://docs.openshift.com/container-platform/3.11/admin_guide/manage_scc.html
 $KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
 
