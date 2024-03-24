@@ -6,6 +6,9 @@ set +a
 
 $KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
 
+kubectl delete serviceaccount "$APP_NAME-sa" --ignore-not-found=true
+kubectl create serviceaccount "$APP_NAME-sa"
+
 # DB SECRETS
 envsubst < k8s-secrets.yml | $KUBE_CLI replace --force -f -
 

@@ -5,11 +5,11 @@ source "./../.env"
 set +a
 
 #1- Kubernetes cluster admin -  Prepare the application namespace
-$KUBE_CLI delete namespace "$APP_NAMESPACE" --ignore-not-found=true
+$KUBE_CLI delete configmap conjur-connect --ignore-not-found=true
+#$KUBE_CLI delete namespace "$APP_NAMESPACE" --ignore-not-found=true
 $KUBE_CLI create namespace "$APP_NAMESPACE"
 
 $KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
-$KUBE_CLI create serviceaccount "$APP_SERVICE_ACCOUNT_NAME"
 
 FOLLOWER_URL="https://$FOLLOWER_SERVICE_NAME.$CYBERARK_CONJUR_NAMESPACE.svc.cluster.local"
 if "$USE_K8S_FOLLOWER" ; then
@@ -30,6 +30,8 @@ $KUBE_CLI create configmap conjur-connect \
   --from-literal CONJUR_APPLIANCE_URL="$APPLIANCE_URL" \
   --from-literal CONJUR_AUTHN_URL="$APPLIANCE_URL"/authn-jwt/"$CYBERARK_CONJUR_AUTHENTICATOR_ID" \
   --from-literal AUTHENTICATOR_ID="$CYBERARK_CONJUR_AUTHENTICATOR_ID" \
+  --from-literal CONJUR_AUTHN_JWT_SERVICE_ID="$CYBERARK_CONJUR_AUTHENTICATOR_ID" \
+  --from-literal MY_POD_NAMESPACE="$APP_NAMESPACE"\
   --from-file "CONJUR_SSL_CERTIFICATE=$CYBERARK_CONJUR_SSL_CERTIFICATE"
 
 rm "$CYBERARK_CONJUR_SSL_CERTIFICATE"

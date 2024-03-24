@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app:  $APP_NAME-secrets-provider-sidecar
+  name:  $APP_NAME-secrets-provider-sidecar
+  namespace: $APP_NAMESPACE
+spec:
+  selector:
+    matchLabels:
+      app:  $APP_NAME-secrets-provider-sidecar
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        conjur.org/container-mode: sidecar
+        conjur.org/secrets-refresh-enabled: "true"
+        conjur.org/secrets-refresh-interval: 60s
+      labels:
+        app:  $APP_NAME-secrets-provider-sidecar
+    spec:
+      serviceAccountName: $APP_NAME-secrets-provider-sidecar-sa
+      containers:
+        - name: $APP_NAME-secrets-provider-sidecar
+          imagePullPolicy: IfNotPresent
+          image: bnasslahsen/conjur-spring-boot-demos
+          env:
+            - name: SPRING_CLOUD_BOOTSTRAP_ENABLED
+              value: "true"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "refreshable"
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-secrets-provider-for-k8s-sidecar
+                  key: url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-secrets-provider-for-k8s-sidecar
+                  key: username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-secrets-provider-for-k8s-sidecar
+                  key: password
+          ports:
+            - containerPort: 8080
+        - image: cyberark/secrets-provider-for-k8s
+          name: configurator
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /conjur/podinfo
+              name: podinfo
+          env:
+            - name: K8S_SECRETS
+              value: db-credentials-secrets-provider-for-k8s-sidecar
+            - name: SECRETS_DESTINATION
+              value: k8s_secrets
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+      volumes:
+        - downwardAPI:
+            defaultMode: 420
+            items:
+              - fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.annotations
+                path: annotations
+          name: podinfo
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name:  $APP_NAME-secrets-provider-sidecar
+  namespace: $APP_NAMESPACE
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      nodePort: 32083
+  selector:
+    app:  $APP_NAME-secrets-provider-sidecar

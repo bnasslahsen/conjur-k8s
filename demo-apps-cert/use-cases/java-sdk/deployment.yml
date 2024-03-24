@@ -22,7 +22,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
+              value: "-Xmx64m -XX:MaxMetaspaceSize=128m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: SPRING_PROFILES_ACTIVE
               value: conjur-java-sdk
             - name: CONJUR_API_KEY

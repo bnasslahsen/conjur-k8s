@@ -15,25 +15,23 @@ spec:
       labels:
         app: $APP_NAME
     spec:
-      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      serviceAccountName: $APP_NAME-sa
       containers:
         - name: $APP_NAME
-          image: $APP_IMAGE_NAME_BASIC
+          image: bnasslahsen/conjur-spring-boot-demos
           imagePullPolicy: Always
           env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
-            - name: DB_URL
+            - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
                   name: db-credentials
                   key: url
-            - name: DB_USERNAME
+            - name:  SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: db-credentials
                   key: username
-            - name: DB_PASSWORD
+            - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: db-credentials

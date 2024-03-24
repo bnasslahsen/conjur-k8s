@@ -1,0 +1,7 @@
+# conjur policy update -f k8s-branch.yml -b data
+- !policy
+  id: $APP_GROUP
+  annotations:
+    description: All K8S policies
+  body:
+    - !group

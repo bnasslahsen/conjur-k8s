@@ -20,13 +20,16 @@ else
   APPLIANCE_URL=$CYBERARK_CONJUR_APPLIANCE_URL
 fi
 
-$KUBE_CLI create secret generic java-sdk-credentials-jwt  \
-        --from-literal=conjur-service-id="$CYBERARK_CONJUR_AUTHENTICATOR_ID"  \
-        --from-literal=conjur-account="$CYBERARK_CONJUR_ACCOUNT" \
-        --from-literal=conjur-jwt-token-path="$CYBERARK_CONJUR_JWT_TOKEN_PATH" \
-        --from-literal=conjur-appliance-url="$APPLIANCE_URL"  \
-        --from-literal=conjur-ssl-cert-base64="$(cat $CYBERARK_CONJUR_SSL_CERTIFICATE | base64)"
-
+kubectl create configmap conjur-connect-spring-jwt \
+  --from-literal SPRING_PROFILES_ACTIVE=secured-java \
+  --from-literal CONJUR_ACCOUNT="$CYBERARK_CONJUR_ACCOUNT" \
+  --from-literal CONJUR_APPLIANCE_URL="$CONJUR_APPLIANCE_URL" \
+  --from-literal CONJUR_AUTHENTICATOR_ID="$CYBERARK_CONJUR_AUTHENTICATOR_ID"  \
+  --from-literal CONJUR_JWT_TOKEN_PATH="/var/run/secrets/kubernetes.io/serviceaccount/token" \
+  --from-literal LOGGING_LEVEL_COM_CYBERARK=DEBUG  \
+  --from-literal SPRING_MAIN_CLOUD_PLATFORM="NONE" \
+  --from-file "CONJUR_SSL_CERTIFICATE=conjur.pem" 
+  
 # DEPLOYMENT
 envsubst < deployment.yml | $KUBE_CLI replace --force -f -
 if ! $KUBE_CLI wait deployment "$APP_JAVA_SDK_JWT" --for condition=Available=True --timeout=90s

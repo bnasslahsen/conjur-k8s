@@ -12,7 +12,6 @@ spec:
     hostname: $CYBERARK_CONJUR_MASTER_HOSTNAME
     account: $CYBERARK_CONJUR_ACCOUNT
     authentication: authn-jwt
-    audience: conjur
     authenticatorID: $CYBERARK_CONJUR_AUTHENTICATOR_ID
     caCertificateFrom:
       configMapKeyRef:
@@ -34,3 +33,4 @@ spec:
     nginx: $FOLLOWER_NGINX_IMAGE
     postgres: $FOLLOWER_POSTGRES_IMAGE
     syslogNg: $FOLLOWER_SYSLOG_IMAGE
+    failoverRebaser: $FOLLOWER_FAILOVER_IMAGE

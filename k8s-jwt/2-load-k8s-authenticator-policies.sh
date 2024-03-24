@@ -4,11 +4,10 @@ set -a
 source "./../.env"
 set +a
 
-#Set up a Kubernetes Authenticator endpoint in Conjur
-envsubst < policies/jwt-authenticator-webservice.yaml > jwt-authenticator-webservice.yaml.tmp
-conjur policy update -f jwt-authenticator-webservice.yaml.tmp -b root
+# Load the applications branch
+conjur policy update -b root -f <(envsubst < policies/app-branch.yml)
 
-rm jwt-authenticator-webservice.yaml.tmp
+conjur policy update -b root -f <(envsubst < policies/jwt-authenticator-webservice.yaml)
 
 #Enable the seed generation service
 if "$USE_K8S_FOLLOWER";

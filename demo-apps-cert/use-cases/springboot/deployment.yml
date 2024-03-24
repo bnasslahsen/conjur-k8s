@@ -24,7 +24,7 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: conjur
             - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
+              value: "-Xmx64m -XX:MaxMetaspaceSize=128m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
             - name: CYBERARK_CONJUR_AUTHN_API_KEY
               valueFrom:
                 secretKeyRef:

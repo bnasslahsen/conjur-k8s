@@ -1,14 +1,35 @@
-- !policy
-  id: $APP_NAME_BASE_PATH
-  body:
-    - !host
-      id: system:serviceaccount:$APP_NAMESPACE:$APP_SERVICE_ACCOUNT_NAME
-      annotations:
-        authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
-        authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_SERVICE_ACCOUNT_NAME
-
+# conjur policy update -f k8s-hosts.yml -b data/bnl
+- &hosts
+  - !host
+    id: system:serviceaccount:$APP_NAMESPACE:$APP_NAME-jwt-sa
+    annotations:
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_NAME-jwt-sa
+  - !host
+    id: system:serviceaccount:$APP_NAMESPACE:$APP_NAME-secrets-provider-sidecar-sa
+    annotations:
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_NAME-secrets-provider-sidecar-sa
+  - !host
+    id: system:serviceaccount:$APP_NAMESPACE:$APP_NAME-push-to-file-sidecar-sa
+    annotations:
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_NAME-push-to-file-sidecar-sa
+  - !host
+    id: system:serviceaccount:$APP_NAMESPACE:$APP_NAME-summon-init-sa
+    annotations:
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_NAME-summon-init-sa
+  - !host
+    id: system:serviceaccount:$APP_NAMESPACE:$APP_NAME-secretless-sa
+    annotations:
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: $APP_NAME-secretless-sa
+  - !host
+    id: system:serviceaccount:$APP_NAMESPACE:demo-db-mysql-sa
+    annotations:
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/namespace: $APP_NAMESPACE
+      authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/kubernetes.io/serviceaccount/name: demo-db-mysql-sa
 - !grant
-  roles:
-    - !group conjur/authn-jwt/$CYBERARK_CONJUR_AUTHENTICATOR_ID/apps
-  members:
-    - !host $APP_NAME_BASE_PATH/system:serviceaccount:$APP_NAMESPACE:$APP_SERVICE_ACCOUNT_NAME
+  role: !group
+  members: *hosts

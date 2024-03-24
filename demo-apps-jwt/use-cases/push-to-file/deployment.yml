@@ -2,91 +2,99 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: $APP_NAME
-  name: $APP_NAME
+    app: $APP_NAME-push-to-file-sidecar
+  name: $APP_NAME-push-to-file-sidecar
   namespace: $APP_NAMESPACE
 spec:
   selector:
     matchLabels:
-      app: $APP_NAME
+      app: $APP_NAME-push-to-file-sidecar
   replicas: 1
   template:
     metadata:
       labels:
-        app: $APP_NAME
+        app: $APP_NAME-push-to-file-sidecar
       annotations:
         # Secrets Provider configuration
         conjur.org/container-mode: sidecar
         conjur.org/secrets-destination: file
-        conjur.org/conjur-secrets-policy-path.test-app: jwt-apps/secrets
-        conjur.org/jwt-token-path: /var/run/secrets/tokens/jwt
-        conjur.org/conjur-secrets.test-app: |
-          - DB_USERNAME: username
-          - DB_PASSWORD: password
-          - DB_URL: url
-        conjur.org/secret-file-path.test-app: "./credentials.properties"
-        conjur.org/secret-file-format.test-app: "bash"
+        conjur.org/conjur-secrets-policy-path.$APP_NAME: vault01/LOBUser1/safe-ocp/dev-db
+        conjur.org/conjur-secrets.$APP_NAME: |
+          - username
+          - password
+          - dsn
+        conjur.org/secret-file-format.$APP_NAME: "template"
+        conjur.org/secret-file-path.$APP_NAME: "./application.yml"
         conjur.org/secrets-refresh-interval: 60s
         conjur.org/secrets-refresh-enabled: "true"
     spec:
-      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      serviceAccountName: $APP_NAME-secrets-provider-sidecar-sa
       containers:
-        - name: $APP_NAME
-          image: $APP_IMAGE_NAME_BASIC
+        - name: $APP_NAME-push-to-file-sidecar
+          image: bnasslahsen/conjur-spring-boot-demos
           imagePullPolicy: IfNotPresent
-          command: [ "/bin/sh", "-c", "source /opt/secrets/conjur/credentials.properties && java -jar /app/target/conjur-k8s-demo-2.0.jar" ]
+          env:
+            - name: SPRING_CONFIG_LOCATION
+              value: /opt/secrets/conjur/application.yml
+            - name: SPRING_MAIN_CLOUD_PLATFORM
+              value: "NONE"
           # Path to the file with the secrets
           volumeMounts:
             - name: conjur-secrets
               mountPath: /opt/secrets/conjur
               readOnly: true
+            - name: conjur-templates
+              mountPath: /conjur/templates
           ports:
             - containerPort: 8080
-        - image: $SECRETS_PROVIDER_IMAGE
+        - image: cyberark/secrets-provider-for-k8s
+          name: configurator
           imagePullPolicy: IfNotPresent
-          name: $CYBERARK_CONJUR_AUTH_K8S_CONTAINER_NAME
-          env:
-            - name: MY_POD_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
           envFrom:
             - configMapRef:
                 name: conjur-connect
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - >
+                  /conjur/status/conjur-secrets-unchanged.sh;
+                  if [ "$?" -ne 0 ]; then
+                    wget -q --header='Content-Type: application/json' --post-data='{}' http://localhost:9090/actuator/refresh >/dev/null 2>&1;
+                    exit 0;
+                  fi
+            failureThreshold: 1
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
           volumeMounts:
-            - name: conjur-status
-              mountPath: /conjur/status
             - name: podinfo
               mountPath: /conjur/podinfo
             - name: conjur-secrets
               mountPath: /conjur/secrets
-            - name: jwt-token
-              mountPath: /var/run/secrets/tokens
+            - name: conjur-templates
+              mountPath: /conjur/templates
       volumes:
-        - name: conjur-status
+        - name: conjur-templates
+          configMap:
+            name: spring-boot-templates
+        - name: conjur-secrets
           emptyDir:
             medium: Memory
         - name: podinfo
           downwardAPI:
             items:
-              - path: annotations
-                fieldRef:
+              - fieldRef:
+                  apiVersion: v1
                   fieldPath: metadata.annotations
-        - name: conjur-secrets
-          emptyDir:
-            medium: Memory
-        - name: jwt-token
-          projected:
-            sources:
-              - serviceAccountToken:
-                  path: jwt
-                  expirationSeconds: 6000
-                  audience: conjur
+                path: annotations
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: $APP_NAME
+  name: $APP_NAME-push-to-file-sidecar
   namespace: $APP_NAMESPACE
 spec:
   type: NodePort
@@ -94,4 +102,4 @@ spec:
     - port: 8080
       nodePort: 32082
   selector:
-    app: $APP_NAME
+    app: $APP_NAME-push-to-file-sidecar

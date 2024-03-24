@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-db-mysql
+  labels:
+    app: demo-db-mysql
+  namespace: $APP_NAMESPACE
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-db-mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: demo-db-mysql
+    spec:
+      serviceAccountName: demo-db-mysql-sa
+      containers:
+        - image: docker.io/mysql:5.7
+          name: demo-db-mysql
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-mysql
+                  key: username
+            - name: MYSQL_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-mysql
+                  key: database
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-mysql
+                  key: username
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-credentials-mysql
+                  key: password
+          ports:
+            - containerPort: 3306
+          readinessProbe:
+            exec:
+              command: ["mysql", "-h", "127.0.0.1", "-uroot", "-pdemo-db", "-e", "SELECT 1"]
+            initialDelaySeconds: 20
+            timeoutSeconds: 2
+      initContainers:
+        - image: cyberark/secrets-provider-for-k8s
+          name: configurator
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: conjur-status
+              mountPath: /conjur/status
+          env:
+            - name: DEBUG
+              value: "true"
+            - name: K8S_SECRETS
+              value: db-credentials-mysql
+            - name: SECRETS_DESTINATION
+              value: k8s_secrets
+          envFrom:
+            - configMapRef:
+                name: conjur-connect
+      volumes:
+        - name: conjur-status
+          emptyDir:
+            medium: Memory
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: demo-db-mysql
+spec:
+  selector:
+    app: demo-db-mysql
+  ports:
+    - port: 3306
+      targetPort: 3306

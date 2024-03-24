@@ -4,13 +4,19 @@ set -a
 source "./../../../.env"
 set +a
 
-$KUBE_CLI config set-context --current --namespace="$APP_NAMESPACE"
+kubectl config set-context --current --namespace="$APP_NAMESPACE"
+
+kubectl delete serviceaccount $APP_NAME-push-to-file-sidecar-sa --ignore-not-found=true
+kubectl create serviceaccount $APP_NAME-push-to-file-sidecar-sa
+
+kubectl delete configmap spring-boot-templates --ignore-not-found=true
+kubectl create configmap spring-boot-templates --from-file=$APP_NAME.tpl
 
 # DEPLOYMENT
-envsubst < deployment.yml | $KUBE_CLI replace --force -f -
-if ! $KUBE_CLI wait deployment "$APP_NAME" --for condition=Available=True --timeout=90s
+envsubst < deployment.yml | kubectl replace --force -f -
+if ! kubectl wait deployment $APP_NAME-push-to-file-sidecar --for condition=Available=True --timeout=90s
   then exit 1
 fi
 
-$KUBE_CLI get services "$APP_NAME"
-$KUBE_CLI get pods
+kubectl get services $APP_NAME-push-to-file-sidecar
+kubectl get pods

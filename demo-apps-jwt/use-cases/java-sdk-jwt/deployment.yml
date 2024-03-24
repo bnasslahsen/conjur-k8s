@@ -1,83 +1,35 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: $APP_JAVA_SDK_JWT
+  name: $APP_NAME-jwt
   namespace: $APP_NAMESPACE
   labels:
-    app: $APP_JAVA_SDK_JWT
+    app: $APP_NAME-jwt
 spec:
   selector:
     matchLabels:
-      app: $APP_JAVA_SDK_JWT
+      app: $APP_NAME-jwt
   replicas: 1
   template:
     metadata:
       labels:
-        app: $APP_JAVA_SDK_JWT
+        app: $APP_NAME-jwt
     spec:
-      serviceAccountName: $APP_SERVICE_ACCOUNT_NAME
+      serviceAccountName: $APP_NAME-jwt-sa
       containers:
-        - name: $APP_JAVA_SDK_JWT
-          image: $APP_IMAGE_NAME_JAVA_SDK
-          imagePullPolicy: Always
-          env:
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Xmx64m -XX:MaxMetaspaceSize=64m -Dspring.main.lazy-initialization=true -XX:TieredStopAtLevel=1 -XX:+UseSerialGC"
-            - name: SPRING_PROFILES_ACTIVE
-              value: conjur-java-sdk
-            - name: CYBERARK_CONJUR_ACCOUNT
-              valueFrom:
-                secretKeyRef:
-                  name: java-sdk-credentials-jwt
-                  key: conjur-account
-            - name: CONJUR_SSL_CERTIFICATE
-              valueFrom:
-                secretKeyRef:
-                  name: java-sdk-credentials-jwt
-                  key: conjur-ssl-cert-base64
-            - name: CONJUR_SERVICE_ID
-              valueFrom:
-                secretKeyRef:
-                  name: java-sdk-credentials-jwt
-                  key: conjur-service-id
-            - name: CYBERARK_CONJUR_APPLIANCE_URL
-              valueFrom:
-                secretKeyRef:
-                  name: java-sdk-credentials-jwt
-                  key: conjur-appliance-url
-            - name: CYBERARK_CONJUR_JWT_TOKEN_PATH
-              valueFrom:
-                secretKeyRef:
-                  name: java-sdk-credentials-jwt
-                  key: conjur-jwt-token-path
-            - name: LOGGING_LEVEL_ORG_CYBERARK
-              value: DEBUG
-            - name: SERVER_PORT
-              value: '8080'
-            - name: APP_SECRET_URL
-              value: $APP_SECRET_URL_PATH
-            - name: APP_SECRET_USERNAME
-              value: $APP_SECRET_USERNAME_PATH
-            - name: APP_SECRET_PASSWORD
-              value: $APP_SECRET_PASSWORD_PATH
-          volumeMounts:
-            - name: jwt-token
-              mountPath: /var/run/secrets/tokens
+        - name: $APP_NAME-jwt
+          image: bnasslahsen/conjur-spring-boot-demos
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: conjur-connect-spring-jwt
           ports:
             - containerPort: 8080
-      volumes:
-        - name: jwt-token
-          projected:
-            sources:
-              - serviceAccountToken:
-                  path: jwt
-                  expirationSeconds: 6000
-                  audience: conjur
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: $APP_JAVA_SDK_JWT
+  name: $APP_NAME-jwt
   namespace: $APP_NAMESPACE
 spec:
   type: NodePort
@@ -85,5 +37,5 @@ spec:
     - port: 8080
       nodePort: 32095
   selector:
-    app: $APP_JAVA_SDK_JWT
+    app: $APP_NAME-jwt
 ---

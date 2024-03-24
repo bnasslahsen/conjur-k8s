@@ -5,15 +5,11 @@ source "./../.env"
 set +a
 
 #Define the application as a Conjur host in policy
-envsubst < policies/app-host.yml > app-host.yml.tmp
-conjur policy update -b root -f app-host.yml.tmp
-rm app-host.yml.tmp
+conjur policy update -b $APP_GROUP -f <(envsubst < policies/app-host.yml)
 
 if "$USE_SYNCHRONIZER" ; then
   # Case of Secrets synchronized from the Vault
-  envsubst < policies/safe-access.yml > safe-access.yml.tmp
-  conjur policy update -b root -f safe-access.yml.tmp
-  rm safe-access.yml.tmp
+  conjur policy update -b vault01/LOBUser1/safe-ocp -f <(envsubst < policies/safe-access.yml)
 else
   # Case of Secrets in Conjur
   envsubst < policies/app-secrets.yml > app-secrets.yml.tmp
