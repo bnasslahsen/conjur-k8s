@@ -23,8 +23,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: conjur-connect-spring-jwt
+          volumeMounts:
+            - mountPath: /opt/secrets/conjur
+              name: conjur-mapping
+              readOnly: true
           ports:
             - containerPort: 8080
+      volumes:
+        - name: conjur-mapping
+          configMap:
+            name: mapping-config-jwt
+            defaultMode: 420
 ---
 apiVersion: v1
 kind: Service
