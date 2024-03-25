@@ -19,7 +19,7 @@ spec:
       containers:
         - name: $APP_NAME-jwt
           image: bnasslahsen/conjur-spring-boot-demos
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: conjur-connect-spring-jwt
